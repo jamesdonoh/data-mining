@@ -1,0 +1,30 @@
+---
+references:
+- id: gangoffour
+  title: 'Design Patterns: Elements of Reusable Object-Oriented Software'
+  author:
+  - family: Gamma
+    given: Erich
+  - family: Helm
+    given: Richard
+  - family: Johnson
+    given: Ralph
+  - family: Vlissides
+    given: John
+  type: book
+  issued: 1994
+  publisher: Addison-Wesley
+  publisher-place: Upper Saddle River, NJ
+- id: tweet
+  title: Tweet data dictionaries
+  author:
+  - literal: Twitter
+  type: webpage
+  URL: https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/tweet-object
+  issued: 2018
+  accessed:
+    date-parts:
+    - - 2018
+      - 04
+      - 8
+...
