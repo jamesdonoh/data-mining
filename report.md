@@ -4,12 +4,12 @@ author: James Donohue (16024143)
 abstract: |
   This is the abstract.
 
-  Exercise choices: classification and text mining.
+  Exercise choices: classification and clustering
 ---
 
 # Data Set
 
-The data set chosen for the report is an archive of tweets from the period X.
+The open data set used in this report is the 2016 release of Road Safety Data [@dft], which gives "the circumstances of personal injury road accidents ... the types (including Make and Model) of vehicles involved and the consequential casualties". The data is published annually on the [data.gov.uk](data.gov.uk) website under a licence that permits non-commercial exploitation [@tna].
 
 ## Description
 
@@ -27,11 +27,6 @@ timestamp_ms     numeric, countably infinite  1511659206666
 
 Table: Summary of data attributes\label{attributes}
 
-### `lang`
-
-The official documentation states of this attribute:
-
-> When present, indicates a BCP 47 language identifier corresponding to the machine-detected language of the Tweet text, or `und` if no language could be detected. [@tweet]
-
+I will site Han [-@han].
 
 # References

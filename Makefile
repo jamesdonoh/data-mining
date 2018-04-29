@@ -1,9 +1,9 @@
 documents = report.pdf
 default: $(documents)
 
-%.pdf: %.md %-bibliography.yaml
+%.pdf: %.md %-bibliography.yaml harvard-bradford.csl
 	pandoc --filter pandoc-citeproc \
-		--csl harvard-greenwich.csl \
+		--csl harvard-bradford.csl \
 		--bibliography=$*-bibliography.yaml \
 		--latex-engine=xelatex \
 		-V geometry:a4paper \

@@ -50,16 +50,13 @@
   <macro name="access">
     <choose>
       <if variable="URL">
-        <text value=" Available at: "/>
         <text variable="URL"/>
-        <group prefix=" (" delimiter=" " suffix=")">
-          <text value="Accessed: "/>
-          <date form="text" variable="accessed">
-            <date-part name="day"/>
-            <date-part name="month"/>
-            <date-part name="year"/>
-          </date>
-        </group>
+        <text value=" Accessed "/>
+        <date form="text" variable="accessed">
+          <date-part name="day"/>
+          <date-part name="month"/>
+          <date-part name="year"/>
+        </date>
       </if>
     </choose>
   </macro>
@@ -163,7 +160,7 @@
       <group delimiter=" ">
         <text macro="author"/>
         <text macro="year-date" prefix="(" suffix=")"/>
-        <text macro="title" suffix=","/>
+        <text macro="title" suffix="."/>
         <text macro="container-prefix"/>
         <group delimiter=", ">
           <text macro="editor"/>
