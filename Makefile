@@ -13,5 +13,17 @@ default: $(documents)
 		--toc --toc-depth=2 \
 		-s -o $@ $<
 
+%.tex: %.md %-bibliography.yaml harvard-bradford.csl
+	pandoc --filter pandoc-citeproc \
+		--csl harvard-bradford.csl \
+		--bibliography=$*-bibliography.yaml \
+		--latex-engine=xelatex \
+		-V geometry:a4paper \
+		-V mainfont=Constantia \
+		-V colorlinks \
+		--number-sections \
+		--toc --toc-depth=2 \
+		-s -o $@ $<
+
 clean:
 	rm -f ${documents}

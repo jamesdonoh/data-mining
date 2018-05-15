@@ -5,28 +5,145 @@ abstract: |
   This is the abstract.
 
   Exercise choices: classification and clustering
+header-includes: |
+    \usepackage{rotating}
 ---
 
-# Data Set
+# Data Choice
 
-The open data set used in this report is the 2016 release of Road Safety Data [@dft], which gives "the circumstances of personal injury road accidents ... the types (including Make and Model) of vehicles involved and the consequential casualties". The data is published annually on the [data.gov.uk](data.gov.uk) website under a licence that permits non-commercial exploitation [@tna].
+## Data Set
 
-## Description
+The open data set used in this report is the UK Government's 2016 release of Road Safety Data [@dft], which gives "the circumstances of personal injury road accidents ... the types (including Make and Model) of vehicles involved and the consequential casualties". The data are published annually on the [data.gov.uk](https://data.gov.uk/) website under a licence that permits non-commercial exploitation with attribution [@tna].
 
-Table \ref{attributes} summarises the attributes in the data set.
+The 2016 data set is distributed as three separate ZIP-compressed comma-separated variable (CSV) files, listed in Table \ref{datafiles} along with the number of data rows in each (each file also includes a single 'header' row providing metadata [@han, p. 92] in the form of field names).
 
-----------------------------------------------------------------------------------------------
-Attribute        Type                         Example value
----------------  ---------------------------  -----------------
-id               numeric, countably infinite  934592567613755400
+----------------------------------------------------------------------  ----------
+Link                                Decompressed filename               Data rows
+----------------------------------  ----------------------------------  ----------
+Road Safety Data - Accidents 2016   `dftRoadSafety_Accidents_2016.csv`  136621
 
-lang             nominal, nullable            `en`
+Road Safety Data - Vehicles 2016    `Veh.csv`                           252500
 
-timestamp_ms     numeric, countably infinite  1511659206666
-----------------------------------------------------------------------------------------------
+Road Safety Data - Casualties 2016  `Cas.csv`                           181384
+----------------------------------------------------------------------------------
 
-Table: Summary of data attributes\label{attributes}
+Table: Overview of 2016 data files\label{datafiles}
 
-I will site Han [-@han].
+## Attribute types
+
+Every data row in each data file represents an object with a number of attributes that describe its features or characteristics [@han, p. 40]. The types of each attribute in the data set are summarised in Appendix A.
+
+## Coding of nominal data
+
+Many attributes in the data set are of nominal data type (that is, representing names of things) but contain integer values. For example, an object in the *Accidents* file may have a value of *20* for the attribute `Police_Force`, but this number is not intended to be used quantitively, instead it represents a nominal value [@han, p. 41]. In this case, *20* represents the West Midlands police force.
+
+An accompanying Excel spreadsheet `Road-Accident-Safety-Data-Guide.xls` (linked under *Additional resources*) provides lookup tables of all possible values for such 'coded' nominal types. This means such attributes have an _enumerated value domain_ [@oecd]. The spreadsheet also explains that the special value `-1` represents "NULL or out of range values".
+
+## Data relationships
+
+The Excel spreadsheet that accompanies the data set also explains the relations between the individual files:
+
+> The ACC_Index field give a unique index for each accident and links to Vehicle and Casualty data. Casualties are linked to vehicles by "VEHREF".
+
+Each of the three files therefore constitutes a relation with its own primary key [@codd], with `ACC_Index` (given as `Accident_Index` in the CSV header rows) as a unique accident identifier and `Casualty_Reference` and `Vehicle_Reference` identifying each casualty and the vehicle with which they are associated, respectively. The primary keys for each relation are shown in the simplified Entity Relationship (ER) diagram in Figure \ref{erdiag}.
+
+![Simplified Entity Relationship diagram for data set\label{erdiag}](er.pdf){ width=80% }
+
+The `Number_of_Vehicles` and `Number_of_Casualties` fields in the *Accidents* file indicate the number of related rows in the other two files. For example, if `Number_of_Vehicles` is `2`, there will be two rows in the *Vehicles* file with the same `Accident_Reference`, having a `Vehicle_Reference` of 1 and 2 respectively. The same applies to casualties.
+
+# Data Analysis
+
+As the data set contains over 70 attributes this section will focus only on selected attributes as illustrations of the process of data analysis.
+
+## `Number_of_Vehicles`
+
+The attribute `Number_of_Vehicles` (in the *Accidents* file) represents how many vehicles were involved in each accident. It is a numeric ratio-scaled attribute (that is, has an inherent zero-point) however as a typical 'count' attribute its values are only integers. In the 2016 data set it has no missing values.
+
+Using the *Statistics* node in KNIME we can calculate some basic statistical descriptions for this attribute. The minimum and maximum values are 1 and 16 respectively. The **mean** number of vehicles in an accident is 1.8482, however as the data are positively skewed for this attribute (skew = 1.5756) a better measure of the centrally tendency is the **median** [@han, p. 46]. Here we can say that the median accident involved 2 vehicles. The **mode** is also 2. The histogram in Figure \ref{numvehicles} shows the distribution of values for this attribute. Values of 6 and above are grouped together as they account for only a very small proportion of the data.
+
+![Histogram for `Number_of_Vehicles`\label{numvehicles}](numvehicles.pdf)
+
+## `Vehicle_Type`
+
+The `Vehicle_Type` attribute in the *Vehicles* file indicates the type of each vehicle involved in an acident. It is a nominal (categorical) attribute. Although represented as an integer, it does not make sense to perform mathematical operations on it so we cannot calculate the mean vehicle type [@han, p. 78], however the mode (most commonly occuring) type is 9 (Car). The integer values correspond to values in the *Vehicle Type* sheet of Excel spreadsheet that accompanies the data.
+
+\begin{sidewaysfigure}
+\centering
+\includegraphics{vehicle-type-correlation.pdf}
+\caption{Workflow for TBD\label{correlation}}
+\end{sidewaysfigure}
+
+The KNIME workflow **TBD** produces a correlation matrix for vehicle types in accidents involving two vehicles. In the resulting table, both the rows and columns represent a given vehicle type and the intersecting cell gives the number of accidents involving that combination of vehicles. This can be further visualised as a 'heat map' such as Figure \ref{heatmap} in order to reveal possible patterns. Cells are highlighted in different shades of red depending on their value; the highlighting midpoint was set to the 85th percentile after some experimentation to produce the clearest differentiation between cells.
+
+\begin{sidewaysfigure}
+\centering
+\includegraphics{heatmap.pdf}
+\caption{Heat map for \texttt{Vehicle\_Type} in two-vehicle
+accidents\label{heatmap}}
+\end{sidewaysfigure}
+
+## `Date`
+
+The `Date` attribute in the *Accidents* file is a string representation (with the format `MM/dd/YYYY`) of the calendar date between 1 January and 31 December 2016 that each accident occurred. It considered interval-scaled because it is measured on a scale of equal-size units (here days) but no true zero-point [@han, p. 80].
+
+Every date occcurs at least once in the data set. Using the *Statistics* node in KNIME we can determine that the date that occurs the most (i.e. with the most accidents) was 25 November, with 566 accidents. This is therefore the mode date. However least-occurring date (i.e. with the least accidents) was 25 December, with only 138, which is likely due to fewer people travelling on Christmas Day.
+
+Although analysis of accident numbers over the year might reveal seasonal trends, to be sound any conclusions would need to be supported by comparison with data from other years. Since reviewing multiple years' data is out of scope for this report, an alternate approach is to look for trends within the year under study. For example, we may wish to know if significantly different numbers of accidents occur at weekends. Figure \ref{dayofweek} uses a box plot to visualise the distribution of of accidents per day of the week. Each bar represents a different day. Data points that are more than 1.5 times the inter-quartile range (IQR) are plotted separately, all of which are classified by KNIME as 'mild' outliers.
+
+![Box plot of accidents by day of week\label{dayofweek}](day-of-week-boxplot.png)
+
+From this we can see that the number of accidents increases slightly as the week progresses, and that weekends have significantly fewer accidents. It is also notable that the 'whiskers' (representing the maximum and minimum values) for Friday are much longer for other days. Table \ref{dayofweektable} confirms that Friday has a much larger standard deviation than other days of the week, meaning that it has the greatest dispersion of values.
+
+-------------------------------------
+Day of week  Min  Max  Mean    StdDev
+-----------  ---  ---  ------  ------
+Monday       187  467  370.69  57.34
+
+Tuesday      261  521  386.62  46.42
+
+Wednesday    286  519  401.37  47.73
+
+Thursday     295  537  402.87  47.43
+
+Friday       249  566  426.02  63.82
+
+Saturday     201  417  336.19  42.73
+
+Sunday       138  383  288.92  42.34
+-------------------------------------
+
+Table: Distribution of accidents by day of week\label{dayofweektable}
+
+## `Time`
+
+The `Time` attribute in the *Accidents* file represents the time of day that an accident occurred.
+
+## Missing values
+
+## Data Preprocessing
+
+We can use the knowledge that the majority (around 60%) of accidents involve two vehicles to focus this study and eliminate some of the complexity that arises from one-to-many data relationships. By considering only accidents involving two vehicles, we can 'denormalise' the *Accident* and *Vehicle* files to allow for further processing.
+
+# Appendix: Summary of software and KNIME workflows
+
+The software used in producing the figures and tables in this report is:
+
+- KNIME 3.5.1
+- Google Sheets (histograms, heat maps)
+
+Table \ref{workflows} summarises the KNIME workflows included with this report.
+
+-------------------------------------------------------------------------------------
+Workflow                            Purpose
+----------------------------------  -------------------------------------------------
+Vehicle Type correlation matrix     Generates a correlation matrix of vehicle types
+(Figure \ref{correlation})          in two-accident collisions suitable for rendering
+                                    as a heat map
+
+Accident date distribution          Generates a box plot showing distribution of
+                                    accident dates and statistical summary
+-------------------------------------------------------------------------------------
+
+Table: Summary of KNIME workflows\label{workflows}
 
 # References

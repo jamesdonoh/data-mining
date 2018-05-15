@@ -37,4 +37,27 @@ references:
     - - 2018
       - 04
       - 29
+- id: codd
+  container-title: Communications of the ACM
+  title: A Relational Model of Data for Large Shared Data Banks 
+  author:
+  - family: Codd
+    given: EF
+  type: article-journal
+  issued: 1970
+  volume: 13
+  issue: 6
+  page: 377-387
+- id: oecd
+  title: "Glossary of Statistical Terms: Value Domain"
+  author:
+  - literal: OECD
+  type: webpage
+  URL: https://stats.oecd.org/glossary/detail.asp?ID=2849
+  issued: 2006
+  accessed:
+    date-parts:
+    - - 2018
+      - 04
+      - 30
 ...
