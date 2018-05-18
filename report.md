@@ -118,6 +118,10 @@ Table: Distribution of accidents by day of week\label{dayofweektable}
 
 The `Time` attribute in the *Accidents* file represents the time of day that an accident occurred.
 
+![Histogram of number of accidents occuring during each hour of day\label{accidents-by-hour}](accidents-by-hour.pdf)
+
+![Histogram of number of accidents occuring during each minute of hour\label{accidents-by-min}](accidents-by-min.pdf)
+
 ## Missing values
 
 ## Data Preprocessing
