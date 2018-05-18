@@ -15,7 +15,7 @@ header-includes: |
 
 The open data set used in this report is the UK Government's 2016 release of Road Safety Data [@dft], which gives "the circumstances of personal injury road accidents ... the types (including Make and Model) of vehicles involved and the consequential casualties". The data are published annually on the [data.gov.uk](https://data.gov.uk/) website under a licence that permits non-commercial exploitation with attribution [@tna].
 
-The 2016 data set is distributed as three separate ZIP-compressed comma-separated variable (CSV) files, listed in Table \ref{datafiles} along with the number of data rows in each (each file also includes a single 'header' row providing metadata [@han, p. 92] in the form of field names).
+The 2016 data set is distributed as three separate ZIP-compressed comma-separated variable (CSV) files, listed in Table \ref{data-files} along with the number of data rows in each (each file also includes a single 'header' row providing metadata [@han, p. 92] in the form of field names).
 
 ----------------------------------------------------------------------  ----------
 Link                                Decompressed filename               Data rows
@@ -27,7 +27,7 @@ Road Safety Data - Vehicles 2016    `Veh.csv`                           252500
 Road Safety Data - Casualties 2016  `Cas.csv`                           181384
 ----------------------------------------------------------------------------------
 
-Table: Overview of 2016 data files\label{datafiles}
+Table: Overview of 2016 data files\label{data-files}
 
 ## Attribute types
 
@@ -45,9 +45,9 @@ The Excel spreadsheet that accompanies the data set also explains the relations 
 
 > The ACC_Index field give a unique index for each accident and links to Vehicle and Casualty data. Casualties are linked to vehicles by "VEHREF".
 
-Each of the three files therefore constitutes a relation with its own primary key [@codd], with `ACC_Index` (given as `Accident_Index` in the CSV header rows) as a unique accident identifier and `Casualty_Reference` and `Vehicle_Reference` identifying each casualty and the vehicle with which they are associated, respectively. The primary keys for each relation are shown in the simplified Entity Relationship (ER) diagram in Figure \ref{erdiag}.
+Each of the three files therefore constitutes a relation with its own primary key [@codd], with `ACC_Index` (given as `Accident_Index` in the CSV header rows) as a unique accident identifier and `Casualty_Reference` and `Vehicle_Reference` identifying each casualty and the vehicle with which they are associated, respectively. The primary keys for each relation are shown in the simplified Entity Relationship (ER) diagram in Figure \ref{entity-relationship}.
 
-![Simplified Entity Relationship diagram for data set\label{erdiag}](er.pdf){ width=80% }
+![Simplified Entity Relationship diagram for data set\label{entity-relationship}](entity-relationship.pdf){ width=80% }
 
 The `Number_of_Vehicles` and `Number_of_Casualties` fields in the *Accidents* file indicate the number of related rows in the other two files. For example, if `Number_of_Vehicles` is `2`, there will be two rows in the *Vehicles* file with the same `Accident_Reference`, having a `Vehicle_Reference` of 1 and 2 respectively. The same applies to casualties.
 
@@ -59,9 +59,9 @@ As the data set contains over 70 attributes this section will focus only on sele
 
 The attribute `Number_of_Vehicles` (in the *Accidents* file) represents how many vehicles were involved in each accident. It is a numeric ratio-scaled attribute (that is, has an inherent zero-point) however as a typical 'count' attribute its values are only integers. In the 2016 data set it has no missing values.
 
-Using the *Statistics* node in KNIME we can calculate some basic statistical descriptions for this attribute. The minimum and maximum values are 1 and 16 respectively. The **mean** number of vehicles in an accident is 1.8482, however as the data are positively skewed for this attribute (skew = 1.5756) a better measure of the centrally tendency is the **median** [@han, p. 46]. Here we can say that the median accident involved 2 vehicles. The **mode** is also 2. The histogram in Figure \ref{numvehicles} shows the distribution of values for this attribute. Values of 6 and above are grouped together as they account for only a very small proportion of the data.
+Using the *Statistics* node in KNIME we can calculate some basic statistical descriptions for this attribute. The minimum and maximum values are 1 and 16 respectively. The **mean** number of vehicles in an accident is 1.8482, however as the data are positively skewed for this attribute (skew = 1.5756) a better measure of the centrally tendency is the **median** [@han, p. 46]. Here we can say that the median accident involved 2 vehicles. The **mode** is also 2. The histogram in Figure \ref{number-of-vehicles} shows the distribution of values for this attribute. Values of 6 and above are grouped together as they account for only a very small proportion of the data.
 
-![Histogram for `Number_of_Vehicles`\label{numvehicles}](numvehicles.pdf)
+![Histogram for `Number_of_Vehicles`\label{number-of-vehicles}](number-of-vehicles.pdf)
 
 ## `Vehicle_Type`
 
@@ -70,16 +70,16 @@ The `Vehicle_Type` attribute in the *Vehicles* file indicates the type of each v
 \begin{sidewaysfigure}
 \centering
 \includegraphics{vehicle-type-correlation.pdf}
-\caption{Workflow for TBD\label{correlation}}
+\caption{Workflow for TBD\label{vehicle-type-correlation}}
 \end{sidewaysfigure}
 
-The KNIME workflow **TBD** produces a correlation matrix for vehicle types in accidents involving two vehicles. In the resulting table, both the rows and columns represent a given vehicle type and the intersecting cell gives the number of accidents involving that combination of vehicles. This can be further visualised as a 'heat map' such as Figure \ref{heatmap} in order to reveal possible patterns. Cells are highlighted in different shades of red depending on their value; the highlighting midpoint was set to the 85th percentile after some experimentation to produce the clearest differentiation between cells.
+The KNIME workflow **TBD** produces a correlation matrix for vehicle types in accidents involving two vehicles. In the resulting table, both the rows and columns represent a given vehicle type and the intersecting cell gives the number of accidents involving that combination of vehicles. This can be further visualised as a 'heat map' such as Figure \ref{vehicle-type-heatmap} in order to reveal possible patterns. Cells are highlighted in different shades of red depending on their value; the highlighting midpoint was set to the 85th percentile after some experimentation to produce the clearest differentiation between cells.
 
 \begin{sidewaysfigure}
 \centering
-\includegraphics{heatmap.pdf}
+\includegraphics{vehicle-type-heatmap.pdf}
 \caption{Heat map for \texttt{Vehicle\_Type} in two-vehicle
-accidents\label{heatmap}}
+accidents\label{vehicle-type-heatmap}}
 \end{sidewaysfigure}
 
 ## `Date`
@@ -88,11 +88,11 @@ The `Date` attribute in the *Accidents* file is a string representation (with th
 
 Every date occcurs at least once in the data set. Using the *Statistics* node in KNIME we can determine that the date that occurs the most (i.e. with the most accidents) was 25 November, with 566 accidents. This is therefore the mode date. However least-occurring date (i.e. with the least accidents) was 25 December, with only 138, which is likely due to fewer people travelling on Christmas Day.
 
-Although analysis of accident numbers over the year might reveal seasonal trends, to be sound any conclusions would need to be supported by comparison with data from other years. Since reviewing multiple years' data is out of scope for this report, an alternate approach is to look for trends within the year under study. For example, we may wish to know if significantly different numbers of accidents occur at weekends. Figure \ref{dayofweek} uses a box plot to visualise the distribution of of accidents per day of the week. Each bar represents a different day. Data points that are more than 1.5 times the inter-quartile range (IQR) are plotted separately, all of which are classified by KNIME as 'mild' outliers.
+Although analysis of accident numbers over the year might reveal seasonal trends, to be sound any conclusions would need to be supported by comparison with data from other years. Since reviewing multiple years' data is out of scope for this report, an alternate approach is to look for trends within the year under study. For example, we may wish to know if significantly different numbers of accidents occur at weekends. Figure \ref{day-of-week-boxplot} uses a box plot to visualise the distribution of of accidents per day of the week. Each bar represents a different day. Data points that are more than 1.5 times the inter-quartile range (IQR) are plotted separately, all of which are classified by KNIME as 'mild' outliers.
 
-![Box plot of accidents by day of week\label{dayofweek}](day-of-week-boxplot.png)
+![Box plot of accidents by day of week\label{day-of-week-boxplot}](day-of-week-boxplot.png)
 
-From this we can see that the number of accidents increases slightly as the week progresses, and that weekends have significantly fewer accidents. It is also notable that the 'whiskers' (representing the maximum and minimum values) for Friday are much longer for other days. Table \ref{dayofweektable} confirms that Friday has a much larger standard deviation than other days of the week, meaning that it has the greatest dispersion of values.
+From this we can see that the number of accidents increases slightly as the week progresses, and that weekends have significantly fewer accidents. It is also notable that the 'whiskers' (representing the maximum and minimum values) for Friday are much longer for other days. Table \ref{day-of-week-table} confirms that Friday has a much larger standard deviation than other days of the week, meaning that it has the greatest dispersion of values.
 
 -------------------------------------
 Day of week  Min  Max  Mean    StdDev
@@ -112,7 +112,7 @@ Saturday     201  417  336.19  42.73
 Sunday       138  383  288.92  42.34
 -------------------------------------
 
-Table: Distribution of accidents by day of week\label{dayofweektable}
+Table: Distribution of accidents by day of week\label{day-of-week-table}
 
 ## `Time`
 
@@ -135,19 +135,19 @@ The software used in producing the figures and tables in this report is:
 - KNIME 3.5.1
 - Google Sheets (histograms, heat maps)
 
-Table \ref{workflows} summarises the KNIME workflows included with this report.
+Table \ref{knime-workflows} summarises the KNIME workflows included with this report.
 
 -------------------------------------------------------------------------------------
-Workflow                            Purpose
-----------------------------------  -------------------------------------------------
-Vehicle Type correlation matrix     Generates a correlation matrix of vehicle types
-(Figure \ref{correlation})          in two-accident collisions suitable for rendering
-                                    as a heat map
+Workflow                                 Purpose
+---------------------------------------  -------------------------------------------------
+Vehicle Type correlation matrix          Generates a correlation matrix of vehicle types
+(Figure \ref{vehicle-type-correlation})  in two-accident collisions suitable for rendering
+                                         as a heat map
 
-Accident date distribution          Generates a box plot showing distribution of
-                                    accident dates and statistical summary
+Accident date distribution               Generates a box plot showing distribution of
+                                         accident dates and statistical summary
 -------------------------------------------------------------------------------------
 
-Table: Summary of KNIME workflows\label{workflows}
+Table: Summary of KNIME workflows\label{knime-workflows}
 
 # References
