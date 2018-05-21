@@ -60,4 +60,62 @@ references:
     - - 2018
       - 04
       - 30
+- id: innamaa
+  title: Road traffic incident risk assessment
+  author:
+  - family: Innamaa
+    given: Satu
+  - family: Norros
+    given: Ilkka
+  - family: Kuusela
+    given: Pirkko
+  - family: Rajamäki
+    given: Riikka
+  - family: Pilli-Sihvola
+    given: Eetu
+  type: webpage
+  URL: https://www.vtt.fi/inf/pdf/technology/2014/T172.pdf
+  issued: 2014
+  accessed:
+    date-parts:
+    - - 2018
+      - 05
+      - 18
+- id: hill
+  title: The innovatory analysis of road traffic accident data
+  author:
+  - family: Hill
+    given: J P
+  type: webpage
+  URL: https://trl.co.uk/reports/PPR056
+  issued: 2005
+  accessed:
+    date-parts:
+    - - 2018
+      - 05
+      - 18
+- id: adls
+  title: STATS19 Road Accident dataset details
+  author:
+  - literal: Administrative Data Liaison Service
+  type: webpage
+  URL: http://www.adls.ac.uk/department-for-transport/stats19-road-accident-dataset/?detail
+  issued: 2018
+  accessed:
+    date-parts:
+    - - 2018
+      - 05
+      - 18
+- id: stats20
+  title: Instructions for the Completion of Road Accident Reports 
+  author:
+  - literal: Department for Transport
+  type: webpage
+  URL: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/230597/stats20-2005.pdf
+  issued: 2004
+  accessed:
+    date-parts:
+    - - 2018
+      - 05
+      - 18
 ...
