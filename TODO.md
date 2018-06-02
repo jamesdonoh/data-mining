@@ -26,13 +26,14 @@
 
 # Checking TWMV data notes
 
-14873 interactions of two-wheeled vehicles with one another vehicle (but incl both ways!)
-262 duplicated Accident_Indexes - where both vehicles were TWMV
-so 14611 if you exclude 'doubles'
-
-There were 82866 accidents involving two vehicles:
+We know there were 82866 accidents involving two vehicles (see charts):
 
 ```
 $ q -H -d , "SELECT COUNT(*) FROM ./dftRoadSafety_Accidents_2016.csv WHERE Number_of_Vehicles = 2"
 82866
 ```
+
+14735 'interactions' of two-wheeled vehicles with one another vehicle (but incl both ways!)
+14473 if you exclude 'doubles' (where both vehicles were TWMV) = 262
+
+
