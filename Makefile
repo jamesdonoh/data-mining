@@ -21,7 +21,7 @@ report.pdf: report.md report-bibliography.yaml harvard-bradford.csl $(all_figure
 
 .PHONY: count
 count:
-	pandoc --to=plain assignment.md | wc -w
+	pandoc --to=plain report.md | wc -w
 
 clean:
 	rm -f report.pdf $(generated_figures)

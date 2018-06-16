@@ -13,6 +13,15 @@ references:
   edition: 3rd edition
   issued: 2012
   publisher: Morgan Kaufmann
+- id: bramer
+  title: Principles of Data Mining
+  author:
+  - family: Bramer
+    given: Max
+  type: book
+  edition: 3rd edition
+  issued: 2016
+  publisher: Springer
 - id: dft
   title: "Road Safety Data - 2016"
   author:
@@ -118,4 +127,97 @@ references:
     - - 2018
       - 05
       - 18
+- id: arff
+  title: "Attribute-Relation File Format (ARFF)"
+  author:
+  - family: Paynter
+    given: Gordon
+  type: webpage
+  URL: https://www.cs.waikato.ac.nz/ml/weka/arff.html
+  issued: 2002
+  accessed:
+    date-parts:
+    - - 2018
+      - 06
+      - 06
+- id: twostep
+  title: The SPSS TwoStep Cluster Component
+  author:
+  - literal: SPSS, Inc.
+  type: webpage
+  URL: https://www.spss.ch/upload/1122644952_The%20SPSS%20TwoStep%20Cluster%20Component.pdf
+  issued: 2001
+  accessed:
+    date-parts:
+    - - 2018
+      - 06
+      - 06
+- id: huang
+  container-title: Data Mining and Knowledge Discovery
+  title: "Extensions to the k-Means Algorithm for Clustering Large Data Sets with Categorical Values"
+  author:
+  - family: Huang
+    given: Zhexue
+  type: article-journal
+  issued: 1998
+  volume: 2
+  issue: 3
+  page: 283-304
+- id: castro
+  container-title: International Journal of Crashworthiness
+  title: "Data mining on road safety: factor assessment on vehicle accidents using classification models"
+  author:
+  - family: Castro
+    given: Yuri
+  - family: Kim
+    given: Young Jin
+  type: article-journal
+  issued: 2015
+  volume: 21
+  issue: 2
+  page: 104-111
+- id: ehsaei
+  container-title: 3rd International Conference on Road Safety and Simulation 
+  title: Temporal Variation of Road Accident Data Caused by Road Infrastructure
+  author:
+  - family: Ehsaei
+    given: Amirhossein
+  - family: Evdorides
+    given: Harry
+  type: paper-conference
+  issued: 2011
+  publisher: Indianapolis, USA, 11 September
+  URL: https://trid.trb.org/view/1290409
+  accessed:
+    date-parts:
+    - - 2018
+      - 06
+      - 06
+- id: zeror
+  title: "WEKA - ZeroR"
+  author:
+  - literal: University of Waikato
+  type: webpage
+  URL: https://weka.wikispaces.com/ZeroR
+  issued: 2018
+  accessed:
+    date-parts:
+    - - 2018
+      - 06
+      - 15
+- id: witten
+  title: Data Mining
+  author:
+  - family: Witten
+    given: Ian H.
+  - family: Frank
+    given: Eibe
+  - family: Hall
+    given: Mark A.
+  - family: Pal
+    given: Christopher J.
+  type: book
+  edition: 4th edition
+  issued: 2016
+  publisher: Morgan Kaufmann
 ...
