@@ -58,7 +58,8 @@
     - For less data usually - don't need it for large data sets
     - Stratified even better
   - Do a table like in https://www.youtube.com/watch?v=dGF475wS5eY&list=PLm4W7_iX_v4NqPUjceOGd-OKNVO4c_cPD&index=13 to compare results (show reduction in variance)
-
+- If trying multiple algorithms use three-way split: training/test/validation
+  https://www.safaribooksonline.com/library/view/Data+Mining,+4th+Edition/9780128043578/xhtml/chp005.xhtml#s0010
 
 # Random things
 

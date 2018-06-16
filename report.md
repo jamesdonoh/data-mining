@@ -212,48 +212,93 @@ The naïve Bayes algorithm uses probability theory to find the most likely class
 
 One reason for choosing this algorithm is that the dataset contains a large number of missing values, and naïve Bayes naturally handles missing values by omitting any such attribute from its calculations [@witten, ch. 4]. By contrast, algorithms such as decision trees require special handling for missing values (such as treating them as values in their own right, or splitting instances; [@witten, ch. 3]).
 
-## Preprocessing
-
-The naïve Bayes approach assumes that all attributes are nominal [@bramer, p. 29] therefore other attribute types must be converted to that type, or discarded. For a first attempt we take the approach of discarding the non-nominal attributes. The `RemoveType` WEKA filter can be used to remove the attribute of non-nominal type (i.e. numeric or date) as follows:
-
-```
-weka.filters.MultiFilter -F "weka.filters.unsupervised.attribute.RemoveType -T \
-  date" -F "weka.filters.unsupervised.attribute.RemoveType -T numeric"
-```
-
-The WEKA Explorer interface with these filters applied is shown in Figure \ref{weka-removetype}.
-
-![WEKA Explorer showing RemoveType filters applied\label{weka-removetype}](weka-removetype.png)
-
 ## Parameters
 
-?
+The naïve Bayes approach assumes that all attributes are nominal [@bramer, p. 29] therefore other attribute types must be converted to that type, or discarded.
+
+For a first attempt we take the approach of discarding all attributes except for the ones relating to vehicle maneouvres and the accident severity, i.e. `TWMV_Vehicle_Manoeuvre`, `OV_Vehicle_Maneouvre` and `Accident_Severity`. The `RemoveByName` WEKA filter can be used to remove all other attributes as follows:
+
+```
+weka.filters.unsupervised.attribute.RemoveByName -E ^.*Manoeuvre$ -V
+```
+
+The WEKA Explorer interface with this filter applied is shown in Figure \ref{weka-removebyname}.
+
+![WEKA Explorer showing RemoveByName filter applied\label{weka-removebyname}](weka-removebyname.png)
+
+The NaiveBayes classifier is then run using the parameters shown in Table \ref{weka-bayesparams}:
+
+-----------------------------------------
+Parameter                    Value
+-----------------------      ------------
+batchSize                    100
+
+debug                        False
+
+displayModelInOldFormat      False
+
+doNotCheckCapabilities       False
+
+numDecimalPlaces             2
+
+useKernelEstimator           False
+
+useSupervisedDiscretization  False
+-----------------------------------------
+
+Table: Initial parameters for NaiveBayes classifier in WEKA\label{weka-bayesparams}
+
+The motivation for these parameters are as follows:
+
+- Batch prediction is not being peformed, and debug output is not required
+- Precision of greater than two decimal places when outputting the model is not needed 
+- No numeric attributes are used so the `useKernelEstimator` and `useSupervisedDiscretization` parameters are not relevant
 
 ## Training and testing
 
+The data were partitioned into a training and test set using the holdout method with a 90%/10% split via the 'Percentage split' option in WEKA, which divides up the data after shuffling it randomly. This means the model is trained with the training set and tested with the remainder to estimate its accuracy. It is important that the model is not also tested using the data that were used to construct it in order to avoid obtaining an over-optimistic estimate of its accuracy [@witten, ch. 5]. As the dataset is very large, cross-validation was considered but deemed unnecessary.
+
 ## Results
+
+The overall recognition rate the model on the test data after initial training was 72.4%, meaning it recognised that proportion of classes correctly; this is also known as the classifier's accuracy [@han, p. 366]. The confusion matrix in Table \ref{naivebayes-confusion} shows counts for actual (Y axis) and predicted (X axis) classes. The true positive (TP) rate for each class is also given (i.e. the proportion of instances of each class where the class was predicted correctly).
+
+--------------------------------------------------------------------------------------------
+         Slight  Serious  Fatal  Total  True positive rate (%)
+-------  ------  -------  -----  -----  ----------------------
+Slight    10496      177      0  10673                    98.3
+
+Serious    3691      171      0   3862                     4.4
+
+Fatal       172       28      0    200                     0.0
+
+Total     14359      376      0  14735
+--------------------------------------------------------------------------------------------
+
+Table: Confusion matrix for NaiveBayes classifier\label{naivebayes-confusion}
+
+It is interesting to note that few serious accidents were correctly identified, no fatal accidents were correctly identified. All figures are given to one decimal place.
 
 ### Accuracy baseline
 
-In order to have a baseline accuracy against which to compare the model, we can use a method such as ZeroR [@zeror]. This allows us to demonstrate whether the classifier is a significant improvement on simply guessing the class based on the most prevalent one (i.e. the mode, as here in the case of a nominal class).
+In order to have a baseline accuracy against which to compare the model, we can use a method such as ZeroR [@zeror]. This allows us to demonstrate whether the classifier is a significant improvement on simply guessing the class based on the most prevalent one (i.e. the mode).
 
-When ZeroR was used as a classifier in WEKA, with the entire dataset used for testing (since holding out some of the data is unnecessary), the results were as shown in the confusion matrix in Table \ref{zeror-confusion}, which also gives totals for actual (Y axis) and predicted (X axis) class. The recognition rate for each class is given as well as overall, to two decimal places.
+When ZeroR was used as a classifier in WEKA, with the entire dataset used for testing (since holding out some of the data is unnecessary), the overall accuracy was also 72.4%. Detailed results are shown in the confusion matrix in Table \ref{zeror-confusion}.
 
 --------------------------------------------------------------------------------------------
-         Slight  Serious  Fatal  Total  Recognition (%)
--------  ------  -------  -----  -----  ---------------
-Slight    10673        0      0  10673  100.00
+         Slight  Serious  Fatal  Total  True positive rate (%)
+-------  ------  -------  -----  -----  ----------------------
+Slight    10673        0      0  10673                   100.0
 
-Serious    3862        0      0   3862  0.00
+Serious    3862        0      0   3862                     0.0
 
-Fatal       200        0      0    200  0.00
+Fatal       200        0      0    200                     0.0
 
-Total     14735        0      0  14735  72.43
+Total     14735        0      0  14735
 --------------------------------------------------------------------------------------------
 
-Table: Confusion matrix for ZeroR classifier\label{zeror-confusion} showing recognition rates
+Table: Confusion matrix for ZeroR classifier\label{zeror-confusion}
 
-Since 'Slight' is the most common class, 100% of these instances are correctly classified by ZeroR, however no 'Serious' or 'Fatal' accidents are correctly classified. The overall recognition rate of ZeroR is 72.43%, meaning it recognises that proportion of classes correctly; this is also known as its accuracy [@han, p. 366].
+Since 'Slight' is the most common class, 100% of these instances are correctly classified by ZeroR, however no 'Serious' or 'Fatal' accidents are correctly classified.
 
 ### Class imbalance
 
