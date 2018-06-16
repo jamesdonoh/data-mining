@@ -220,4 +220,27 @@ references:
   edition: 4th edition
   issued: 2016
   publisher: Morgan Kaufmann
+- id: devos
+  title: kmodes
+  author:
+  - family: de Vos
+    given: Nico
+  type: webpage
+  URL: https://github.com/nicodv/kmodes
+  issued: 2018
+  accessed:
+    date-parts:
+    - - 2018
+      - 06
+      - 16
+- id: rousseeuw
+  container-title: Journal of Computational and Applied Mathematics
+  title: "Silhouettes: A graphical aid to the interpretation and validation of cluster analysis"
+  author:
+  - family: Rousseeuw
+    given: Peter J.
+  type: article-journal
+  issued: 1987
+  volume: 20
+  page: 53-65
 ...

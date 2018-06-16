@@ -61,11 +61,6 @@ Cluster analysis involves "grouping objects that are similar to each other and d
 
 Two challenges of this data set for clustering analysis are its large number of attributes and the fact that it mainly consists of nominal attributes, since many clustering algorithms focus on numeric data and work best with a small number of attributes [@han, p. 446-7].
 
-#### Choice of algorithm
-
-Partioning methods find mutually exclusive clusters that are spherical in shape, using a distance function to measure the similarity of objects within a cluster and therefore minimise the amount of within-cluster variation [@han, p. 489]. Of these methods, the popular _k_-means algorithm uses the arithmetic mean to find the centroid of each cluster and therefore needs numerical attributes. The _k_-modes method put forward by Huang [-@huang] is an extension to _k_-means which supports nominal (categorical) attributes, utilising the mode instead of the mean. _k_-modes was therefore selected as an initial basis a clustering workflow.
-
-Since KNIME does not support _k_-modes natively, a *Python Script* node was used to provide the algorithm using an external Python interpreter, using de Vos' open-source implementation [cite]. The result of this was an additional numeric attribute dataset that identifies the cluter with which each object has been associated.
 
 
 
@@ -204,13 +199,13 @@ Classification is a data mining functionality that divides up objects (instances
 
 In order to perform classification on the dataset it is necessary to select a suitable attribute to represent the 'class' of each accident. The `Accident_Severity` attribute was selected as it represents a significant feature of the accident that we would like to be able to predict based on other features. In real world terms, this means that an accurate classifier model could predict which types of accidents are likely to be the most serious based on their other characteristics.
 
-## Choice of classifier
+## Choice of classifier and features
 
-Hill used cross-tabulation to identify clusters of vehicle maneouvres that are heavily represented in the accident data, including one where another vehicle turns right while the TWMV performs any manoeuvre [-@hill, p. p10]. It is of interest to know which combination(s) of maneouvres are likely to result in a severe or fatal accident. Put another way, we would like to be able to predict the probability of an accident belonging to a given severity class, based on the maneouvres involved. We will assume that the type of each manoeuvre is independent of the other.
+Hill used cross-tabulation to identify clusters of vehicle maneouvres that are heavily represented in the accident data, including a group where another vehicle turns right while the TWMV performs any manoeuvre [-@hill, p. p10]. It is of interest to know which combination(s) of maneouvres are likely to result in a severe or fatal accident. Put another way, we would like to be able to predict the probability of an accident belonging to a given severity class, based on the maneouvres involved. We will assume that the type of each manoeuvre is independent of the other.
 
 The naïve Bayes algorithm uses probability theory to find the most likely classification [@bramer, p. 22]. It is called naïve because the algorithm operates on the assumption that the effect of each attribute value on the classification is equally important and independent of the other attributes, but is known to often give surprisingly good results in practice [@bramer, p. 26]. By exploring this relatively straightforward probablistic model, we follow Witten et al.'s advice to try the simplest things first [-@witten, ch. 4].
 
-One reason for choosing this algorithm is that the dataset contains a large number of missing values, and naïve Bayes naturally handles missing values by omitting any such attribute from its calculations [@witten, ch. 4]. By contrast, algorithms such as decision trees require special handling for missing values (such as treating them as values in their own right, or splitting instances; [@witten, ch. 3]).
+Another reason for choosing this algorithm is that the dataset contains a large number of missing values, and naïve Bayes naturally handles missing values by not including such attributes in its calculations [@witten, ch. 4]. By contrast, algorithms such as decision trees require special handling for missing values (such as treating them as values in their own right, or splitting instances - [@witten, ch. 3]).
 
 ## Parameters
 
@@ -250,9 +245,9 @@ Table: Initial parameters for NaiveBayes classifier in WEKA\label{weka-bayespara
 
 The motivation for these parameters are as follows:
 
-- Batch prediction is not being peformed, and debug output is not required
+- The default value for batch size is acceptable, and debug output is not required
 - Precision of greater than two decimal places when outputting the model is not needed 
-- No numeric attributes are used so the `useKernelEstimator` and `useSupervisedDiscretization` parameters are not relevant
+- Numeric attributes have already been removed used so the `useKernelEstimator` and `useSupervisedDiscretization` parameters are not relevant
 
 ## Training and testing
 
@@ -260,19 +255,19 @@ The data were partitioned into a training and test set using the holdout method 
 
 ## Results
 
-The overall recognition rate the model on the test data after initial training was 72.4%, meaning it recognised that proportion of classes correctly; this is also known as the classifier's accuracy [@han, p. 366]. The confusion matrix in Table \ref{naivebayes-confusion} shows counts for actual (Y axis) and predicted (X axis) classes. The true positive (TP) rate for each class is also given (i.e. the proportion of instances of each class where the class was predicted correctly).
+The overall recognition rate of the Bayesian classifier on the test data after training was 73.7%, meaning it predicted that proportion of classes in the test data correctly; this is also known as its accuracy [@han, p. 366]. The confusion matrix in Table \ref{naivebayes-confusion} shows counts for actual (rows) and predicted (columns) classes.
 
---------------------------------------------------------------------------------------------
-         Slight  Serious  Fatal  Total  True positive rate (%)
--------  ------  -------  -----  -----  ----------------------
-Slight    10496      177      0  10673                    98.3
+---------------------------------------------------------------------------------------
+         Slight  Serious  Fatal  Total  True positive rate (%)  False positive rate (%)
+-------  ------  -------  -----  -----  ----------------------  -----------------------
+Slight     1065       15      0   1080                    98.6                     93.4
 
-Serious    3691      171      0   3862                     4.4
+Serious     346       21      0    367                     5.7                      1.8
 
-Fatal       172       28      0    200                     0.0
+Fatal        21        5      0     26                     0.0                      0.0
 
-Total     14359      376      0  14735
---------------------------------------------------------------------------------------------
+Total      1432       41      0   1473
+---------------------------------------------------------------------------------------
 
 Table: Confusion matrix for NaiveBayes classifier\label{naivebayes-confusion}
 
@@ -284,14 +279,14 @@ In order to have a baseline accuracy against which to compare the model, we can 
 
 When ZeroR was used as a classifier in WEKA, with the entire dataset used for testing (since holding out some of the data is unnecessary), the overall accuracy was also 72.4%. Detailed results are shown in the confusion matrix in Table \ref{zeror-confusion}.
 
---------------------------------------------------------------------------------------------
-         Slight  Serious  Fatal  Total  True positive rate (%)
--------  ------  -------  -----  -----  ----------------------
-Slight    10673        0      0  10673                   100.0
+---------------------------------------------------------------------------------------
+         Slight  Serious  Fatal  Total  True positive rate (%)  False positive rate (%)
+-------  ------  -------  -----  -----  ----------------------  -----------------------
+Slight    10673        0      0  10673                   100.0                    100.0
 
-Serious    3862        0      0   3862                     0.0
+Serious    3862        0      0   3862                     0.0                      0.0
 
-Fatal       200        0      0    200                     0.0
+Fatal       200        0      0    200                     0.0                      0.0
 
 Total     14735        0      0  14735
 --------------------------------------------------------------------------------------------
@@ -302,23 +297,40 @@ Since 'Slight' is the most common class, 100% of these instances are correctly c
 
 ### Class imbalance
 
-The 'class imbalance problem' describes a situation where the class (or classes) of interest are rare [@han, p. 367]. This applies to the current dataset, since we are interested to know which circumstances produce the most severe accidents, and fatal accidents represent just over 1% of the dataset. Moreover, the cost of more severe accidents (both financial and social) is likely to be greater than for slight accidents.
+The 'class imbalance problem' describes a situation where the class (or classes) of interest are rare [@han, p. 367]. This applies to the current dataset, since we are interested to know which circumstances produce the worst accidents, and fatal accidents represent just over 1% of the dataset. Moreover, the cost of more severe accidents (both financial and social) is likely to be greater than for slight accidents.
 
-To help assess this we can use the 'sensitivity' (true positive rate) and 'specificity' (true negative rate) for each class [TBD].
+To assess this it is helpful to consider the true positive rate (sensitivity) and false positive rate for each class as well as the model's overall accuracy. The true positive (TP) rate is the proportion of instances of each class where the class label was predicted correctly, while the FP rate is the proportion of instances that were mislabelled with the class. These figures are both included in Tables \ref{zerror-confusion} and \ref{naivebayes-confusion}.
 
-## Visualisation
+### Receiver operating characteristic curves
 
-?
+Receiver operating characteristic (ROC) curves can be used to visualise the trade-off between the true positive rate and false positive rates for a given class [@han, p. 374]. Since naïve Bayesian classifiers return a class probability for each prediction they can be used to plot ROC curves as an aid to tuning the learning approach. Figure \ref{naivebayes-roc} shows such a curve for the model produced above with respect to the 'fatal' accident severity. This is produced in WEKA by right-clicking on the result and selecting 'Visualize threshold curve > Fatal'.
+
+![Initial ROC curve for fatal accidents (X axis = false positive rate, Y axis = true positive rate)\label{naivebayes-roc}](naivebayes-roc.bmp)
+
+The closer to the diagonal the curve is, the less accurate the model is with respect to predicting the class. We can also use the area under the curve as a measure of its accuracy, which here is 0.70.
 
 ## Tuning strategy
 
-- Laplace?
-- Dependencies - attribute selection
-- Normal distribution of numeric attributes
+As mentioned above, severe and fatal accidents are likely to have a greater social and economic impact and be in greater need of further investigation. They also represent a relatively small proportion of the dataset. We would like to be able to improve the accuracy of the naïve Bayes classifier with respect to correctly identifying these classes of accident.
+
+### Cost-sensitive learning
+
+This technique uses a cost matrix to assign different costs to the different types of classifier error 
+
 
 ## Final results
 
+# Clustering
+
+Clustering is a form of unsupervised data mining in which objects that are similar are grouped together [@bramer, p. 312].
+
 # Critical review
+
+## Difficulties and mistakes
+
+### Choice of dataset
+
+The selection of the dataset used in the study clearly created a number of additional challenges. Some of these related to the extensive amount of pre-processing required on the data, for example to denormalise the *Accidents* and *Vehicles* tables. Furthermore, the class distribution is heavily skewed towards 'slight' accidents, which required further effort in the classification task to ensure that more serious accidents could be predicted.
 
 ## Future work
 
@@ -343,6 +355,31 @@ We could then use Bayes' theorem to estimate the probability that any new accide
 $$ P(H \mid A) = \frac{P(A \mid H) \, P(H)}{P(A)} $$
 
 The final step would be to determine a probability threshold for identifying an accident as fatal. For example, we could say that if the probability is > 0.75 then the accident is fatal, and test by holding out some of the data. The results from this investigation could be used to validate Hill's findings described earlier.
+
+### Longitudinal study
+
+Since the same STATS19 format has been used since [TBC] there is considerable scope for looking at how patterns in the data have evolved over time. [@castro] looked at datasets from both 2010 and 2012, while [@ehsaei] considered trends over the period [TBC]. An area for further investigation could be to take the models trained here against the 2016 dataset and test them against releases from previous years to evaluate any changes in accuracy.
+
+#### Clustering nominal data
+
+Partioning methods of cluster analysis find mutually exclusive clusters that are spherical in shape, using a distance function to measure the similarity of objects within a cluster and therefore minimise the amount of within-cluster variation [@han, p. 489]. Of these methods, the popular _k_-means algorithm uses the arithmetic mean to find the centroid of each cluster and therefore needs numerical attributes. The _k_-modes method put forward by Huang [-@huang] is an extension to _k_-means which supports nominal (categorical) attributes, utilising the mode instead of the mean. Because of the large amount of nominal attributes in the dataset, _k_-modes could be used as a more effective clustering approach.
+
+Since KNIME and Weka do not have built-in support for _k_-modes, a KNIME *Python Script* node could be used to provide the algorithm using an external Python interpreter, using a popular open-source implementation [@devos]. The workflow shown in Figure \ref{knime-kmodes} and basic Python code is given below:
+
+```python
+import numpy as np
+import pandas as pd
+from kmodes.kmodes import KModes
+
+kmodes_huang = KModes(n_clusters=4, init='Huang', verbose=1)
+clusters = kmodes_huang.fit_predict(input_table)
+
+output_table = pd.DataFrame(data=clusters, dtype=np.int64)
+```
+
+![Proof-of-concept KNIME workflow for k-modes\label{knime-kmodes}](knime-kmodes.pdf)
+
+The result of this workflow is an additional numeric attribute dataset that identifies the cluter with which each object has been associated. Further areas of study could involve how to visualise and characterise such clusters, for example using silhouettes [@rousseeuw] to evaluate cluster quality and suggest the optimal number of clusters .
 
 # Appendix: Summary of KNIME workflows
 

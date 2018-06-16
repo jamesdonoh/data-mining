@@ -29,6 +29,8 @@
 
 # Suggestions for further work
 
+- Feature Engineering: AddExpression, PrincipalComponents
+- Oversampling
 - Do box plot and stacked columns by hour
 - Explain why we can't say that weekends are safer
 - Explain why weekend having lower accidents is 'significant' (because boxes are disjoint?)
@@ -41,6 +43,8 @@
 # Critical Review
 
 - Explain why to use both KNIME and WEKA - compare strengths
+- Consider converting severity to binary attribute to make easier to handle
+  - Split into fatal+sever
 - Importance of sanity checking attribute values - get close to your data
 - CRISP-DM process: https://www.safaribooksonline.com/library/view/data-mining-4th/9780128043578/xhtml/chp001.xhtml#chp001titl
 - Different ways of handling missing data in Weka: https://machinelearningmastery.com/how-to-handle-missing-values-in-machine-learning-data-with-weka/
@@ -82,6 +86,11 @@ $ q -H -d , "SELECT COUNT(*) FROM ./dftRoadSafety_Accidents_2016.csv WHERE Numbe
 14735 'interactions' of two-wheeled vehicles with one another vehicle (but incl both ways!)
 14473 if you exclude 'doubles' (where both vehicles were TWMV) = 262
 
+# Misc
+
+- WEKA handles the zero-frequency problem by adding one to all the counts
+- Dependencies - attribute selection
+- Normal distribution of numeric attributes
 
 # Weka YouTube
 
