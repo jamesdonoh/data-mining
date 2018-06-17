@@ -1,6 +1,6 @@
 default: report.pdf
 
-generated_figures = vehicle-type-correlation.pdf knime-kmodes.pdf
+generated_figures = vehicle-type-correlation.pdf knime-kmodes.pdf accident-locations.pdf
 
 all_figures = accidents-by-hour.pdf accidents-by-min.pdf entity-relationship.pdf vehicle-type-heatmap.pdf number-of-vehicles.pdf day-of-week-boxplot.png $(generated_figures)
 

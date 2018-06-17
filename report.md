@@ -57,13 +57,17 @@ The `Number_of_Vehicles` and `Number_of_Casualties` fields in the *Accidents* fi
 
 ### Clustering
 
-Cluster analysis involves "grouping objects that are similar to each other and dissimilar to the objects belonging to other clusters" [@bramer, p. 311]. This technique, a form of unsupervised machine learning, might allow us to discover classes of accidents that have similar characteristics and make them the focus of further analysis. In practice this could eventually lead to recommendations about additional safety measures (for example, changes to road design or rider training) that might reduce the prevalance of such accident classes.
+Cluster analysis involves "grouping objects that are similar to each other and dissimilar to the objects belonging to other clusters" [@bramer, p. 311]. This technique, a form of unsupervised machine learning, might allow us to discover groups of accidents that have similar characteristics and make them the focus of further analysis. In practice this could eventually lead to recommendations about additional safety measures (for example, changes to road design or rider training) that might reduce the prevalance of such accident classes. Clustering can also be an initial process that prepares data for other kinds of data mining.
 
 Two challenges of this data set for clustering analysis are its large number of attributes and the fact that it mainly consists of nominal attributes, since many clustering algorithms focus on numeric data and work best with a small number of attributes [@han, p. 446-7].
 
+#### Handling of nominal attributes
 
+To allow clustering methods that require numeric data (such as _k_-means) to be used on the dataset we can attempt to convert some of the nominal attributes into other forms. Such efforts fall into the category of what Witten et. al term 'data engineering' [-@witten, ch. 8].
 
+For example, the various road classes used by the nominal `1st_Road_Class` and `2nd_Road_Class` attributes have a natural ordering of the level of development of the road, ranging from 'Unclassified' (the lowest level) to 'Motorway' (the highest level). In the KNIME workflow for Accidents these have been assigned to integers ranging from 0 to 5 to create a new `1st_Road_Level` attribute [figure?].
 
+Note however that not all nominal attributes can be handled in this way - the `Police_Force` attribute does not have any 'natural' ordering (e.g. `Northumbria` is not less than `Durham`). Although numeric values could be assigned here, they would be arbitrary and so any clusters involving them would be coincidental. See the Critial Review section for further comments on this problem.
 
 ### Literature review
 
@@ -153,6 +157,14 @@ Similarly, Figure \ref{accidents-by-min} shows the number of accidents that occu
 ![Histogram of number of accidents occuring during each hour of day\label{accidents-by-hour}](accidents-by-hour.pdf){ width=80% }
 
 ![Histogram of number of accidents occuring during each minute of hour\label{accidents-by-min}](accidents-by-min.pdf){ width=80% }
+
+### `Longitude` and `Latitude`
+
+By using the *Scatter Plot* and *Color Manager* nodes in KNIME we can see the distribution of values for the `Longitude` and `Latitude` attributes (for two-vehicle accidents involving TWMVs), with colours used to indicate accident severity (Figure \ref{accident-locations}).
+
+![Scatter plot of motorcycle accident locations generated with KNIME\label{accident-locations}](accident-locations.pdf){ width=60% }
+
+Since these attributes represent geographical coordinates, the shape of Great Britain is clearly visible on the plot. Moreover, the areas with the greatest concentration of accidents appears to correspond to more urban areas and those with greater population density (the South-East, Birmingham and Manchester/Liverpool areas) but this would require further investigation in order to prove.
 
 ## Data Preprocessing
 
@@ -322,7 +334,11 @@ This technique uses a cost matrix to assign different costs to the different typ
 
 # Clustering
 
-Clustering is a form of unsupervised data mining in which objects that are similar are grouped together [@bramer, p. 312].
+As mentioned previously, clustering is a form of unsupervised data mining in which objects that are similar are grouped together [@bramer, p. 312].
+
+## Choice of algorithm
+
+The algorithm chosen is..
 
 # Critical review
 
@@ -380,6 +396,14 @@ output_table = pd.DataFrame(data=clusters, dtype=np.int64)
 ![Proof-of-concept KNIME workflow for k-modes\label{knime-kmodes}](knime-kmodes.pdf)
 
 The result of this workflow is an additional numeric attribute dataset that identifies the cluter with which each object has been associated. Further areas of study could involve how to visualise and characterise such clusters, for example using silhouettes [@rousseeuw] to evaluate cluster quality and suggest the optimal number of clusters .
+
+## Analysis of geographical locations
+
+As shown earlier, plotting geographical coordinates (`Longitude` and `Latitude`) reveals a greater number of accidents in some areas of Great Britain. This intuitively seems to correspond to areas of greatest population density, however the relationship is unproven. It would be interesting to know which factors have the greatest correlation with the number of motorcycle accidents. One way of doing this would be to source population data for the UK and 'divide' the number of accidents plotted by it. Other datasets could be attempted for comparison, for example number of motorcycles registered to owners by postcode. The goal of such analysis would be to identify the most strongly correlated factors and perhaps reveal unexpected discrepancies where the number of accidents is higher than would be expected for an area.
+
+#### Synthesising binary attributes
+
+One weakness of transforming ordinal nominal attributes such as `1st_Road_Class` to integers described earlier is that it implies an equal distance between the possible values. This could be avoided by converting nominal attributes to synthetic binary attributes indicating the presence or absence of a value, which implies ordering without equal distance, following [@witten, ch. 8].
 
 # Appendix: Summary of KNIME workflows
 
