@@ -7,13 +7,13 @@ header-includes: |
 
 # Data Choice
 
-## Data Set
+## Data set
 
 The open data set used in this report is the Department for Transport's 2016 release of Road Safety Data [@dft], which gives "the circumstances of personal injury road accidents ... the types (including Make and Model) of vehicles involved and the consequential casualties". The data are published annually on the [data.gov.uk](https://data.gov.uk/) website under a licence that permits non-commercial exploitation with attribution [@tna].
 
-The source of the data is the 'STATS19' accident reporting form used by police and so the data is also referred to by this name. The STATS19 data has been recorded (with some changes in attribute semantics) since 1979 [@adls]. The Department for Transport also produces a 'STATS20' document which provides guidance on completing the form defines some of its terminology [@stats20].
+The source of the data is the 'STATS19' accident reporting form used by police and so the data are also referred to by this name. The STATS19 data has been recorded (with some changes in attribute semantics) since 1979 [@adls]. The Department for Transport also produces a 'STATS20' document which provides guidance on completing the form and defines some of its terminology [@stats20].
 
-The 2016 data set is distributed as three separate ZIP-compressed comma-separated variable (CSV) files, listed in Table \ref{data-files} along with the number of data rows in each (each file also includes a single 'header' row providing metadata [@han, p. 92] in the form of field names).
+The 2016 data set is distributed as three separate ZIP-compressed comma-separated variable (CSV) files, listed in Table \ref{data-files} along with the number of data rows in each (each file also includes a single 'header' row providing metadata in the form of field names).
 
 ----------------------------------------------------------------------  ----------
 Link                                Decompressed filename               Data rows
@@ -27,9 +27,19 @@ Road Safety Data - Casualties 2016  `Cas.csv`                           181384
 
 Table: Overview of 2016 data files\label{data-files}
 
-## Workflows in this document
+## Choice of tools
 
-All workflows described in the remainder of the document are available from the following public Dropbox folder in the `KNIME workflows/` subdirectory:
+[KNIME](https://www.knime.com/) 3.5.1 was selected as the software to perform the majority of data exploration and analysis in this report. However, after some experimentation it was decided that [WEKA](https://www.cs.waikato.ac.nz/ml/weka/) provides an easier-to-use nterface for rapidly experimenting with different classification and clustering techniques, so for this reason after preparation the data were exported from KNIME into a format that can be read by WEKA 3.8.2 to experiment with data mining techniques.
+
+WEKA 3.8.2 was used initially but this was later downgraded to 3.8.0 in order to evaluate the [KValid](https://github.com/Theldus/KValid) package as described below.
+
+In addition, Python 2.7.13 with the `pandas`, `protobuf` and `jedi` extensions (installed as per the [KNIME documentation](https://www.knime.com/blog/how-to-setup-the-python-extension) and the `kmodes` extension (installed following the steps on the [k-modes GitHub repo](https://github.com/nicodv/kmodes)) were used in the Critical Review section.
+
+The histogram and heat map figures in the report were prepared using Google Sheets for improved appearance and visual clarity.
+
+## KNIME workflows
+
+All workflows described in this document are available from the following public Dropbox folder in the `KNIME workflows` subdirectory:
 
     https://www.dropbox.com/sh/h8mnk57f2invard/AADV6XmaKKJ_UzMIJ7IuC129a?dl=0
 
@@ -54,23 +64,43 @@ Workflow                                     Purpose
 
 Table: Summary of KNIME workflows\label{knime-workflows}
 
-For convenience, the data files mentioned above are also included in the `data/ subdirectory (as permitted under the Open Government Licence).
+For convenience, the data files mentioned above are also included in the `data` subdirectory (as permitted under the Open Government Licence).
+
+The transformed ARFF version of the dataset suitable for use in WEKA is included in the same subdirectory as `Accidents-2Veh-TWMV.arff`.
 
 ## Attribute types
 
-Every data row in each data file represents an object with a number of attributes that describe its features or characteristics [@han, p. 40]. The types of each attribute in the data set are summarised in Appendix A.
+Every data row in each data file represents an object with a number of attributes that describe its features or characteristics [@han, p. 40]. The types of each attribute in the data set along with example values for each are given in Figures \ref{data-type-accidents}, \ref{data-type-vehicles} and \ref{data-type-casualties}.
+
+\begin{sidewaysfigure}
+\centering
+\includegraphics{data-types-accidents.pdf}
+\caption{Attribute types for Accidents file\label{data-type-accidents}}
+\end{sidewaysfigure}
+
+\begin{sidewaysfigure}
+\centering
+\includegraphics{data-types-vehicles.pdf}
+\caption{Attribute types for Vehicles file\label{data-type-vehicles}}
+\end{sidewaysfigure}
+
+\begin{sidewaysfigure}
+\centering
+\includegraphics{data-types-casualties.pdf}
+\caption{Attribute types for Casulaties file\label{data-type-casualties}}
+\end{sidewaysfigure}
 
 ## Coding of nominal data
 
 Many attributes in the data set are of nominal data type (that is, representing names of things) but contain integer values. For example, an object in the *Accidents* file may have a value of *20* for the attribute `Police_Force`, but this number is not intended to be used quantitatively, instead it represents a nominal value [@han, p. 41]. In this case, *20* represents the West Midlands police force.
 
-An accompanying Excel spreadsheet `Road-Accident-Safety-Data-Guide.xls` (linked under *Additional resources*) provides lookup tables of all possible values for such 'coded' nominal types. This means such attributes have an _enumerated value domain_ [@oecd]. The spreadsheet also explains that the special value `-1` represents "NULL or out of range values".
+An accompanying Excel spreadsheet `Road-Accident-Safety-Data-Guide.xls` (linked under *Additional resources* on the data.gov.uk page) provides lookup tables of all possible values for such 'coded' nominal types. This means such attributes have an _enumerated value domain_ [@oecd]. The spreadsheet also explains that the special value `-1` represents "NULL or out of range values".
 
 ## Data relationships
 
 The Excel spreadsheet that accompanies the data set also explains the relations between the individual files:
 
-> The ACC_Index field give a unique index for each accident and links to Vehicle and Casualty data. Casualties are linked to vehicles by "VEHREF".
+> The ACC_Index field gives a unique index for each accident and links to Vehicle and Casualty data. Casualties are linked to vehicles by "VEHREF".
 
 Each of the three files therefore constitutes a relation with its own primary key [@codd], with `ACC_Index` (given as `Accident_Index` in the CSV header rows) as a unique accident identifier and `Casualty_Reference` and `Vehicle_Reference` identifying each casualty and the vehicle with which they are associated, respectively. The primary keys for each relation are shown in the simplified Entity Relationship (ER) diagram in Figure \ref{entity-relationship}.
 
@@ -78,35 +108,35 @@ Each of the three files therefore constitutes a relation with its own primary ke
 
 The `Number_of_Vehicles` and `Number_of_Casualties` fields in the *Accidents* file indicate the number of related rows in the other two files. For example, if `Number_of_Vehicles` is `2`, there will be two rows in the *Vehicles* file with the same `Accident_Reference`, having a `Vehicle_Reference` of 1 and 2 respectively. The same applies to casualties.
 
+## Problem specification
+
+The problem to be considered is how data mining techniques can be applied to the dataset in order to generate knowledge about the conditions that give rise to road traffic accidents in the UK. Such knowledge could help to shape public policy such as:
+
+- informing the design of the road network
+- improving driver training and education
+- identifying classes of vulnerable road users
+
+The possible benefits of using these approaches are therefore a reduction in the number of accidents, or a decrease in the severity of those accidents. Associated with this we should also consider the potential for reducing the financial cost of dealing with these accidents.
+
+As the dataset is updated each year, there is also scope for techniques which are found to be useful to be applied to data from other years in order to monitor trends over time.
+
 ## Applicability of data mining techniques
 
-### Clustering
+The data mining techniques most applicable to the above problem are classification/prediction and clustering. This is because we would like to classify (or predict) the severity of accidents based on their other features and also to identify previously unknown groupings in the data (clusters) in order to prioritise safety measures and as a starting point for further analysis. This selection is supported by the examination of relevant literature given below.
 
-Cluster analysis involves "grouping objects that are similar to each other and dissimilar to the objects belonging to other clusters" [@bramer, p. 311]. This technique, a form of unsupervised machine learning, might allow us to discover groups of accidents that have similar characteristics and make them the focus of further analysis. In practice this could eventually lead to recommendations about additional safety measures (for example, changes to road design or rider training) that might reduce the prevalence of such accident classes. Clustering can also be an initial process that prepares data for other kinds of data mining.
+Association rule mining could also be considered as a further area to investigate (i.e. determining if certain accident features occur frequently together) but was not selected for this study.
 
-Two challenges of this data set for clustering analysis are its large number of dimensions and the fact that it mainly consists of nominal attributes, since many clustering algorithms focus on numeric data and work best with a small number of attributes [@han, p. 446-7].
-
-#### Transformation of nominal attributes
-
-To allow clustering methods that assume numeric data (such as _k_-means) to be used on the dataset we can attempt to convert some of the nominal attributes into other forms. Such efforts fall into the category of what Witten et. al term 'data engineering' [-@witten, ch. 8].
-
-For example, the various road classes used by the nominal `1st_Road_Class` and `2nd_Road_Class` attributes have a natural ordering of the level of development of the road, ranging from 'Unclassified' (the lowest level) to 'Motorway' (the highest level). In the KNIME workflow for Accidents these have been assigned to integers ranging from 0 to 5 to create a new `1st_Road_Level` attribute [figure?].
-
-Note however that not all nominal attributes can be handled in this way - the `Police_Force` attribute does not have any 'natural' ordering (e.g. `Northumbria` is not less than `Durham`). Although numeric values could be assigned here, they would be arbitrary and so any clusters involving them would be coincidental. See the Critical Review section for further comments on this problem.
-
-### Literature review
+### Literature review
 
 Hill [-@hill] evaluated the usefulness of several cluster analysis methods in identifying relatively homogenous groups of accidents from the STATS19 data from 1997 and 2002 for further investigation with a goal "to generate ideas for how the number of these accidents might be reduced". SPSS TwoStep, CHAID and cross-tabulation were evaluated, with the last two being the most promising. For Hill two-step cluster analysis on these data requires too much subjective intervention by the analyst and produces less 'transparent' results than the latter two methods.
 
-Although the TwoStep algorithm [@twostep] is efficient on large datasets and supports a mixture of continuous and categorical variables, SPSS was not available for this report to compare with Hill's findings.
+Although the TwoStep algorithm is efficient on large datasets and supports a mixture of continuous and categorical variables [@twostep], SPSS was not available for this report to compare with Hill's findings.
 
-Other researchers studying road traffic accident data over a six-year period in the United Arab Emirates [@taamneh] used agglomerative (bottom-up) hierarchical clustering to partition accidents into between one and six clusters, as a precursor to building a neural network classifier. WEKA was used to carry out the clustering and that complete linkage was used as the linkage criterion. However, no attempt was made to characterise the clusters that were found or evaluate cluster quality.
-
+Other researchers studying road traffic accident data over a six-year period in the United Arab Emirates [@taamneh] used agglomerative (bottom-up) hierarchical clustering to partition accidents into between one and six clusters, as a precursor to building a neural network classifier. WEKA was used to carry out the clustering and complete linkage was used as the linkage criterion. However, no attempt was made to characterise the clusters that were found or evaluate cluster quality.
 
 Castro and Kim [-@castro] approached identifying the factors that contribute the most to accident severity in STATS19 datasets as a classification problem, where the classifier models created were used to predict the class (severity) of the accident. WEKA was used to create a Bayesian (belief) network, a C4.5-based decision tree and a multi-layer perceptron (neural network) and the accuracy of each in classifying unseen instances was tested using crossfold validation. The results showed that the Bayesian network was the most accurate and that light conditions and road type were the most significant factors. However, extensive filtering and other preprocessing was preformed on the data.
 
 Ehsaei and Evdorides [-@ehsaei] used data mining techniques to analyse the temporal variation in contribution of road infrastructure features to accident severity over a five-year period, in response to changes in national road policies. The researchers again used WEKA and a Bayesian network, but limited their study only to accidents in the Greater Manchester area and to road infrastructure features. Training and testing was performed using a 66%/34% split. However, rather than attempting to demonstrate the accuracy of their model, in their results they extracted the probabilities of different road features (such as 'Junction Detail') occurring in conjunction with different severities from the classifier. This served as a way of identifying the most high-risk locations on the road network.
-
 
 # Data Analysis
 
@@ -122,7 +152,7 @@ Using the *Statistics* node in KNIME we can calculate some basic statistical des
 
 ## `Vehicle_Type`
 
-The `Vehicle_Type` attribute in the *Vehicles* file indicates the type of each vehicle involved in an accident. It is a nominal (categorical) attribute. Although represented as an integer, it does not make sense to perform mathematical operations on it so we cannot calculate the mean vehicle type [@han, p. 78], however the mode (most commonly occurring) type is 9 (Car). The integer values correspond to values in the *Vehicle Type* sheet of Excel spreadsheet that accompanies the data.
+The `Vehicle_Type` attribute in the *Vehicles* file indicates the type of each vehicle involved in an accident. It is a nominal (categorical) attribute. Although represented as an integer, it does not make sense to perform mathematical operations on it so we cannot calculate the mean vehicle type [@han, p. 78], however the mode (most commonly occurring) type is 9 (Car). The integer values correspond to values in the *Vehicle Type* sheet of the Excel spreadsheet that accompanies the data.
 
 \begin{sidewaysfigure}
 \centering
@@ -130,7 +160,7 @@ The `Vehicle_Type` attribute in the *Vehicles* file indicates the type of each v
 \caption{Workflow for vehicle type correlation matrix\label{vehicle-type-correlation}}
 \end{sidewaysfigure}
 
-The KNIME workflow *Vehicle type correlation matrix* produces a correlation matrix for vehicle types in accidents involving two vehicles. In the resulting table, both the rows and columns represent a given vehicle type and the intersecting cell gives the number of accidents involving that combination of vehicles. This can be further visualised as a 'heat map' such as Figure \ref{vehicle-type-heatmap} in order to reveal possible patterns. Cells are highlighted in different shades of red depending on their value; the highlighting midpoint was set to the 85th percentile after some experimentation to produce the clearest differentiation between cells. Note that cells along the top diagonal need to have their values halved to avoid showing a double count; this is because of the way the Joiner and Pivoting nodes work.
+The KNIME workflow *Vehicle type correlation matrix* (Figure \ref{vehicle-type-correlation}) produces a correlation matrix for vehicle types in accidents involving two vehicles. In the resulting table, both the rows and columns represent a given vehicle type and the intersecting cell gives the number of accidents involving that combination of vehicles. This can be further visualised as a 'heat map' such as Figure \ref{vehicle-type-heatmap} in order to reveal possible patterns. Cells are highlighted in different shades of red depending on their value; the highlighting midpoint was set to the 85th percentile after some experimentation to produce the clearest differentiation between cells. Note that cells along the top diagonal need to have their values halved to avoid showing a double count; this is because of the way the Joiner and Pivoting nodes work.
 
 \begin{sidewaysfigure}
 \centering
@@ -195,9 +225,13 @@ By using the *Scatter Plot* and *Color Manager* nodes in KNIME we can see the di
 
 Since these attributes represent geographical coordinates, the shape of Great Britain is clearly visible on the plot. Moreover, the areas with the greatest concentration of accidents appears to correspond to more urban areas and those with greater population density (the South-East, Birmingham and Manchester/Liverpool areas) but this would require further investigation in order to prove.
 
-## Data Preprocessing
+## Data preprocessing and transformation
 
 We can use the knowledge that the majority (around 60%) of accidents involve two vehicles to focus this study and eliminate some of the complexity that arises from one-to-many data relationships. By considering only accidents involving two vehicles, we can 'denormalise' the *Accident* and *Vehicle* files to allow for further processing.
+
+Furthermore, for the remainder of this report we confine our study to two-vehicle accidents involving two-wheeled motor vehicles (TWMVs). This is becuse this class of vehicle is of personal interest to the researcher.
+
+The KNIME workflow shown in Figure \ref{knime-preprocessing} shows the steps required to transform the accident data into a form suitable for studying this type of accident. The prefixes `TWMV_` and `OV_` (for 'Other Vehicle') are used to disambiguate the two joins of the *Vehicles* file.
 
 ## Reducing dimensions
 
@@ -209,7 +243,7 @@ As the dataset contains a very large number of dimensions, the amount of storage
 
 ## Importing into WEKA
 
-In order to import the dataset into WEKA for exploration it must to be converted to WEKA's ARFF format [@arff] which includes type information. The *ARFF Writer* node in KNIME supports creating files in this format, however it does not seem to support WEKA's `DATE` type but outputs these attributes as STRING instead. In order to work around this the file must be post-processed after generation, such as by using `sed(1)`:
+In order to import the dataset into WEKA for exploration it must to be converted to WEKA's ARFF format [@arff] which includes type information. This process is shown in the workflow in Figure \ref{knime-weka-export}. The *ARFF Writer* node in KNIME supports creating files in this format, however it does not seem to support WEKA's `DATE` type but outputs these attributes as STRING instead. In order to work around this the file must be post-processed after generation, such as by using `sed(1)`:
 
     sed -ipe "s/^@ATTRIBUTE DateTime.*/@ATTRIBUTE DateTime DATE yyyy-MM-dd'T'HH:mm/" \
         Accidents-2Veh-TWMV.arff
@@ -221,22 +255,6 @@ There are two different types of missing values in the dataset. For example, the
 For consistency and to enable WEKA to identify and handle missing values, all such nominal value codes were folded to 'true' missing values during pre-processing in KNIME by limiting the number of rows read by the *Excel Reader* node prior to being looked up by *Cell Replacer*. Note that this process did not include values such as `Unclassified` for `Road_Type`, since despite the name this is a valid type of road rather than missing data.
 
 NB two accidents have a missing value for `Time`.
-
-## Choice of tools
-
-KNIME 3.5.1 was chosen ... (talk about metanodes, documentation etc.)
-
-Python 2.7.13 with the `pandas`, `protobuf` and `jedi` extensions (installed as per the [KNIME documentation](https://www.knime.com/blog/how-to-setup-the-python-extension) and the `kmodes` extension (installed following the steps on the [k-modes GitHub repo](https://github.com/nicodv/kmodes))
-
-Other extensions used:
-- matplotlib
-- scikit-learn
-
-In addition, the histogram and heat map figures in the report were prepared using Google Sheets for improved visual clarity.
-
-WEKA 3.8.2 was installed and later downgraded to 3.8.0
-
-The KValid package for silhouette analysis was installed from https://github.com/Theldus/KValid
 
 ## Data preparation workflows
 
@@ -440,7 +458,23 @@ Table: Confusion matrix for cost-sensitive NaiveBayes classifier\label{naivebaye
 
 In contrast with the original classifier test results in Table \ref{naivebayes-confusion} the classifier performed worse overall with an accuracy of 71.8%. However, it correctly predicted the class of 6 (23.1%) of the fatal accidents in the test set. At the same time, it misclassified 3.4% of non-fatal accidents as fatal, and identified only 5.7% of serious accidents correctly. This suggests that it is possible to improve the accuracy of a classifier by making it cost-sensitive, but only at the expense of accuracy with respect to other classes.
 
+![Cost-sensitive ROC curve for fatal accidents\label{naivebayes-cost-roc}](naivebayes-cost-roc.bmp)
+
+The ROC curve for fatal accidents was regenerated with the new classifier and is shown in Figure \ref{naivebayes-cost-roc}. However, the visual differences to \ref{naivebayes-roc} are minimal, and the area under the curve remains around 0.70.
+
 # Clustering
+
+Cluster analysis involves "grouping objects that are similar to each other and dissimilar to the objects belonging to other clusters" [@bramer, p. 311]. This technique, a form of unsupervised machine learning, might allow us to discover groups of accidents that have similar characteristics and make them the focus of further analysis. In practice this could eventually lead to recommendations about additional safety measures (for example, changes to road design or rider training) that might reduce the prevalence of such accident classes. Clustering can also be an initial process that prepares data for other kinds of data mining.
+
+Two challenges of this data set for clustering analysis are its large number of dimensions and the fact that it mainly consists of nominal attributes, since many clustering algorithms focus on numeric data and work best with a small number of attributes [@han, p. 446-7].
+
+## Handling of nominal attributes
+
+To allow clustering methods that assume numeric data (such as _k_-means) to be used on the dataset we can attempt to convert some of the nominal attributes into other forms. Such efforts fall into the category of what Witten et. al term 'data engineering' [-@witten, ch. 8].
+
+For example, the various road classes used by the nominal `1st_Road_Class` and `2nd_Road_Class` attributes have a natural ordering of the level of development of the road, ranging from 'Unclassified' (the lowest level) to 'Motorway' (the highest level). In the KNIME workflow for integrating the *Accidents* data file these have been assigned to integers ranging from 0 to 5 to create a new `1st_Road_Level` attribute (see the 'Data engineering' grouping in the workflow shown in Figure \ref{knime-integration-accidents}).
+
+Note however that not all nominal attributes can be handled in this way - the `Police_Force` attribute does not have any 'natural' ordering (e.g. `Northumbria` is not less than `Durham`). Although numeric values could be assigned here, they would be arbitrary and so any clusters involving them would be coincidental. See the Critical Review section for further comments on this problem.
 
 As mentioned previously, clustering is a form of unsupervised data mining in which objects that are similar are grouped together [@bramer, p. 312].
 
@@ -448,9 +482,9 @@ As mentioned previously, clustering is a form of unsupervised data mining in whi
 
 Partitioning methods of cluster analysis find mutually exclusive clusters that are spherical in shape, using a distance function to measure the similarity of objects within a cluster and therefore minimise the amount of within-cluster variation [@han, p. 489]. Of these methods, the iterative _k_-means algorithm uses the arithmetic mean to find the centroid of each cluster and therefore needs numerical attributes.
 
-The _k_-modes method put forward by Huang [-@huang] is an extension to _k_-means which supports nominal (categorical) attributes, utilising the mode instead of the mean. Because of the large amount of nominal attributes in the dataset, _k_-modes could be used. We expect any clusters found to be disjoint (i.e. not overlapping). Other options considered but rejected were the agglomerative hierarchical clustering used by [@taamneh].
+The _k_-modes method put forward by Huang [-@huang] is an extension to _k_-means which supports nominal (categorical) attributes, utilising the mode instead of the mean. Because of the large amount of nominal attributes in the dataset, _k_-modes could be used. We expect any clusters found to be disjoint (i.e. not overlapping). Other options considered but rejected were the agglomerative hierarchical clustering used by Taamneh, Taamneh and Alkheder [-@taamneh].
 
-KNIME and WEKA do not have explicitly implementations of _k_-modes. However, on investigation it was found that WEKA's *SimpleKMeans* clusterer supports nominal attributes (this can be seen by viewing the 'Capabilities' window for the classifier, which includes 'Nominal attributes'). It can be determined from looking at the source of the `SimpleKMeans` and `NormalizableDistance` classes [@wekasrc] that WEKA uses the mode instead of the mean when processing nominal attributes and calculates the distance between instances comprised of nominal attributes by counting the number of attributes that have different values. This suggests its implementation is similar if not identical to _k_-modes and so is sufficient for our purposes.
+KNIME and WEKA do not have explicit implementations of _k_-modes. However, on investigation it was found that WEKA's *SimpleKMeans* clusterer supports nominal attributes (this can be seen by viewing the 'Capabilities' window for the classifier, which includes 'Nominal attributes'). It can be determined from looking at the source of the `SimpleKMeans` and `NormalizableDistance` classes [@wekasrc] that WEKA uses the mode instead of the mean when processing nominal attributes and calculates the distance between instances comprised of nominal attributes by counting the number of attributes that have different values. This suggests its implementation is similar if not identical to _k_-modes and so is sufficient for our purposes.
 
 In order to simplify processing and produce results that could be more easily interpreted, a small number of nominal attributes were selected for clustering, all related to vehicle manoeuvre and position in relation to junctions. This was in order to attempt to replicate some of Hill's [-@hill] findings. These attributes were as follows:
 
@@ -563,8 +597,6 @@ However it would be useful to have a way of objectively measuring the quality of
 
 One way of evaluating the quality of clusters is by using silhouette analysis [@rousseeuw]. This can also be used to suggest the optimal value for _k_. An unofficial but open-source WEKA package **KValid** providing this functionality is available [@francis].
 
-#### Installation
-
 It appears that the **KValid** package is currently not compatible with changes to WEKA's classloading mechanism introduced in version 3.8.1. In order to test this package it was therefore necessary to download WEKA 3.8.0 instead. Once this is done, the KValid package can be installed locally using:
 
 ```
@@ -572,8 +604,6 @@ $ java weka.core.WekaPackageManager -install-package ~/path/to/KValid.zip
 ```
 
 After this is done, **KValid** is listed as an option in the *Cluster* tab and can be used as a way of running *SimpleKMeans* with different values of _k_ and plotting the silhouette index of each.
-
-#### Parameters
 
 The additional parameters used to run *KValid* are shown in Table \ref{kvalid-params}. Note that not all parameters of *SimpleKMeans* are supported.
 
@@ -605,7 +635,9 @@ The WEKA Clusterer Visualize interface (opened by right-clicking on the results 
 
 ## Reflections on difficulties encountered
 
-The selection of the dataset used in the study clearly created a number of additional challenges. Some of these related to the extensive amount of pre-processing required on the data, for example to denormalise the *Accidents* and *Vehicles* tables. Furthermore, the class distribution is heavily skewed towards 'slight' accidents, which required further effort in the classification task to ensure that more serious accidents could be predicted.
+The selection of the dataset used in the study clearly created a number of additional challenges. Some of these related to the extensive amount of pre-processing required on the data, for example to denormalise the *Accidents* and *Vehicles* files. As ultimately only a small number of attributed were subjected to data mining processes, much of the initial preprocessing could have been avoided by selecting a smaller dataset that had already been prepared. This would have allowed more time to explore a greater range of data mining possibilities.
+
+Furthermore, the class distribution in the dataset is heavily skewed towards 'slight' accidents, which required further effort in the classification task to ensure that more serious accidents could be predicted.
 
 The initial accuracy of the naïve Bayes classifier was disappointing in that it failed to predict any fatal accidents, however this could perhaps have been anticipated through more detailed exploration of the data in the analysis phase. This might have revealed the 'class imbalance' problem and informed the choice of classification technique.
 
@@ -664,12 +696,12 @@ output_table = pd.DataFrame(data=clusters, dtype=np.int64)
 
 The result of this workflow is an additional numeric attribute dataset that identifies the cluster with which each object has been associated. The results of this could be compared with the output of WEKA's `SimpleKMeans` clusterer described earlier.
 
-### Analysis of geographical locations
-
-As shown earlier, plotting geographical coordinates (`Longitude` and `Latitude`) reveals a greater number of accidents in some areas of Great Britain. This intuitively seems to correspond to areas of greatest population density, however the relationship is unproven. It would be interesting to know which factors have the greatest correlation with the number of motorcycle accidents. One way of doing this would be to source population data for the UK and 'divide' the number of accidents plotted by it. Other datasets could be attempted for comparison, for example number of motorcycles registered to owners by postcode. The goal of such analysis would be to identify the most strongly correlated factors and perhaps reveal unexpected discrepancies where the number of accidents is higher than would be expected for an area.
-
 ### Synthesising binary attributes
 
 One weakness of transforming ordinal nominal attributes such as `1st_Road_Class` to integers described earlier is that it implies an equal distance between the possible values. This could be avoided by converting nominal attributes to synthetic binary attributes indicating the presence or absence of a value, which implies ordering without equal distance, following [@witten, ch. 8].
+
+### Analysis of geographical locations
+
+As shown earlier, plotting geographical coordinates (`Longitude` and `Latitude`) reveals a greater number of accidents in some areas of Great Britain. This intuitively seems to correspond to areas of greatest population density, however the relationship is unproven. It would be interesting to know which factors have the greatest correlation with the number of motorcycle accidents. One way of doing this would be to source population data for the UK and 'divide' the number of accidents plotted by it. Other datasets could be attempted for comparison, for example number of motorcycles registered to owners by postcode. The goal of such analysis would be to identify the most strongly correlated factors and perhaps reveal unexpected discrepancies where the number of accidents is higher than would be expected for an area.
 
 # References
