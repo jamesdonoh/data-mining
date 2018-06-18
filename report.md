@@ -62,7 +62,7 @@ Every data row in each data file represents an object with a number of attribute
 
 ## Coding of nominal data
 
-Many attributes in the data set are of nominal data type (that is, representing names of things) but contain integer values. For example, an object in the *Accidents* file may have a value of *20* for the attribute `Police_Force`, but this number is not intended to be used quantitively, instead it represents a nominal value [@han, p. 41]. In this case, *20* represents the West Midlands police force.
+Many attributes in the data set are of nominal data type (that is, representing names of things) but contain integer values. For example, an object in the *Accidents* file may have a value of *20* for the attribute `Police_Force`, but this number is not intended to be used quantitatively, instead it represents a nominal value [@han, p. 41]. In this case, *20* represents the West Midlands police force.
 
 An accompanying Excel spreadsheet `Road-Accident-Safety-Data-Guide.xls` (linked under *Additional resources*) provides lookup tables of all possible values for such 'coded' nominal types. This means such attributes have an _enumerated value domain_ [@oecd]. The spreadsheet also explains that the special value `-1` represents "NULL or out of range values".
 
@@ -82,7 +82,7 @@ The `Number_of_Vehicles` and `Number_of_Casualties` fields in the *Accidents* fi
 
 ### Clustering
 
-Cluster analysis involves "grouping objects that are similar to each other and dissimilar to the objects belonging to other clusters" [@bramer, p. 311]. This technique, a form of unsupervised machine learning, might allow us to discover groups of accidents that have similar characteristics and make them the focus of further analysis. In practice this could eventually lead to recommendations about additional safety measures (for example, changes to road design or rider training) that might reduce the prevalance of such accident classes. Clustering can also be an initial process that prepares data for other kinds of data mining.
+Cluster analysis involves "grouping objects that are similar to each other and dissimilar to the objects belonging to other clusters" [@bramer, p. 311]. This technique, a form of unsupervised machine learning, might allow us to discover groups of accidents that have similar characteristics and make them the focus of further analysis. In practice this could eventually lead to recommendations about additional safety measures (for example, changes to road design or rider training) that might reduce the prevalence of such accident classes. Clustering can also be an initial process that prepares data for other kinds of data mining.
 
 Two challenges of this data set for clustering analysis are its large number of dimensions and the fact that it mainly consists of nominal attributes, since many clustering algorithms focus on numeric data and work best with a small number of attributes [@han, p. 446-7].
 
@@ -92,7 +92,7 @@ To allow clustering methods that assume numeric data (such as _k_-means) to be u
 
 For example, the various road classes used by the nominal `1st_Road_Class` and `2nd_Road_Class` attributes have a natural ordering of the level of development of the road, ranging from 'Unclassified' (the lowest level) to 'Motorway' (the highest level). In the KNIME workflow for Accidents these have been assigned to integers ranging from 0 to 5 to create a new `1st_Road_Level` attribute [figure?].
 
-Note however that not all nominal attributes can be handled in this way - the `Police_Force` attribute does not have any 'natural' ordering (e.g. `Northumbria` is not less than `Durham`). Although numeric values could be assigned here, they would be arbitrary and so any clusters involving them would be coincidental. See the Critial Review section for further comments on this problem.
+Note however that not all nominal attributes can be handled in this way - the `Police_Force` attribute does not have any 'natural' ordering (e.g. `Northumbria` is not less than `Durham`). Although numeric values could be assigned here, they would be arbitrary and so any clusters involving them would be coincidental. See the Critical Review section for further comments on this problem.
 
 ### Literature review
 
@@ -100,12 +100,12 @@ Hill [-@hill] evaluated the usefulness of several cluster analysis methods in id
 
 Although the TwoStep algorithm [@twostep] is efficient on large datasets and supports a mixture of continuous and categorical variables, SPSS was not available for this report to compare with Hill's findings.
 
-Other researchers studying road traffic accident data over a six-year period in the United Arab Emirates [@taamneh] used agglomerative (bottom-up) hierarchical clustering to partition accidents into between one and six clusters, as a precursor to building an neural network classifier. WEKA was used to carry out the clustering and that complete linkage was used as the linkage criterion. However, no attempt was made to characterise the clusters that were found or evaluate cluster quality.
+Other researchers studying road traffic accident data over a six-year period in the United Arab Emirates [@taamneh] used agglomerative (bottom-up) hierarchical clustering to partition accidents into between one and six clusters, as a precursor to building a neural network classifier. WEKA was used to carry out the clustering and that complete linkage was used as the linkage criterion. However, no attempt was made to characterise the clusters that were found or evaluate cluster quality.
 
 
 Castro and Kim [-@castro] approached identifying the factors that contribute the most to accident severity in STATS19 datasets as a classification problem, where the classifier models created were used to predict the class (severity) of the accident. WEKA was used to create a Bayesian (belief) network, a C4.5-based decision tree and a multi-layer perceptron (neural network) and the accuracy of each in classifying unseen instances was tested using crossfold validation. The results showed that the Bayesian network was the most accurate and that light conditions and road type were the most significant factors. However, extensive filtering and other preprocessing was preformed on the data.
 
-Ehsaei and Evdorides [-@ehsaei] used data mining techniques to analyse the temporal variation in contribution of road infrastructure features to accident severity over a five-year period, in response to changes in national road policies. The reserchers again used WEKA and a Bayesian network, but limited their study only to accidents in the Greater Manchester area and to road infrastructure features. Training and testing was performed using a 66%/34% split. However, rather than attempting to demonstrate the accuracy of their model, in their results they extracted the the probabilities of different road features (such as 'Junction Detail') occuring in conjunction with different severities from the classifier. This served as a way of identifying the most high-risk locations on the road network.
+Ehsaei and Evdorides [-@ehsaei] used data mining techniques to analyse the temporal variation in contribution of road infrastructure features to accident severity over a five-year period, in response to changes in national road policies. The researchers again used WEKA and a Bayesian network, but limited their study only to accidents in the Greater Manchester area and to road infrastructure features. Training and testing was performed using a 66%/34% split. However, rather than attempting to demonstrate the accuracy of their model, in their results they extracted the probabilities of different road features (such as 'Junction Detail') occurring in conjunction with different severities from the classifier. This served as a way of identifying the most high-risk locations on the road network.
 
 
 # Data Analysis
@@ -122,7 +122,7 @@ Using the *Statistics* node in KNIME we can calculate some basic statistical des
 
 ## `Vehicle_Type`
 
-The `Vehicle_Type` attribute in the *Vehicles* file indicates the type of each vehicle involved in an acident. It is a nominal (categorical) attribute. Although represented as an integer, it does not make sense to perform mathematical operations on it so we cannot calculate the mean vehicle type [@han, p. 78], however the mode (most commonly occuring) type is 9 (Car). The integer values correspond to values in the *Vehicle Type* sheet of Excel spreadsheet that accompanies the data.
+The `Vehicle_Type` attribute in the *Vehicles* file indicates the type of each vehicle involved in an accident. It is a nominal (categorical) attribute. Although represented as an integer, it does not make sense to perform mathematical operations on it so we cannot calculate the mean vehicle type [@han, p. 78], however the mode (most commonly occurring) type is 9 (Car). The integer values correspond to values in the *Vehicle Type* sheet of Excel spreadsheet that accompanies the data.
 
 \begin{sidewaysfigure}
 \centering
@@ -143,9 +143,9 @@ accidents\label{vehicle-type-heatmap}}
 
 The `Date` attribute in the *Accidents* file is a string representation (with the format `MM/dd/YYYY`) of the calendar date between 1 January and 31 December 2016 that each accident occurred. It considered interval-scaled because it is measured on a scale of equal-size units (here days) but no true zero-point [@han, p. 80].
 
-Every date occcurs at least once in the data set. Using the *Statistics* node in KNIME we can determine that the date that occurs the most (i.e. with the most accidents) was 25 November, with 566 accidents. This is therefore the mode date. However least-occurring date (i.e. with the least accidents) was 25 December, with only 138, which is likely due to fewer people travelling on Christmas Day. For comparison, since 2016 was a leap year with 366 days and the *Accidents* file contains data about 136621 accidents, we can say that the mean number of accidents per day was 373.28.
+Every date occurs at least once in the data set. Using the *Statistics* node in KNIME we can determine that the date that occurs the most (i.e. with the most accidents) was 25 November, with 566 accidents. This is therefore the mode date. However least-occurring date (i.e. with the least accidents) was 25 December, with only 138, which is likely due to fewer people travelling on Christmas Day. For comparison, since 2016 was a leap year with 366 days and the *Accidents* file contains data about 136621 accidents, we can say that the mean number of accidents per day was 373.28.
 
-Although analysis of accident numbers over the year might reveal seasonal trends, to be sound any conclusions would need to be supported by comparison with data from other years. Since reviewing multiple years' data is out of scope for this report, an alternate approach is to look for trends within the year under study. For example, we may wish to know if significantly different numbers of accidents occur at weekends. The KNIME workflow given in Figure \ref{knime-accident-data-distribution} was used to generate the box plot shown in Figure \ref{day-of-week-boxplot}, which allows us to visualise the distribution of of accidents per day of the week. Each bar represents a different day. Data points that are more than 1.5 times the inter-quartile range (IQR) are plotted separately, all of which are classified by KNIME as 'mild' outliers.
+Although analysis of accident numbers over the year might reveal seasonal trends, to be sound any conclusions would need to be supported by comparison with data from other years. Since reviewing multiple years' data is out of scope for this report, an alternate approach is to look for trends within the year under study. For example, we may wish to know if significantly different numbers of accidents occur at weekends. The KNIME workflow given in Figure \ref{knime-accident-data-distribution} was used to generate the box plot shown in Figure \ref{day-of-week-boxplot}, which allows us to visualise the distribution of accidents per day of the week. Each bar represents a different day. Data points that are more than 1.5 times the inter-quartile range (IQR) are plotted separately, all of which are classified by KNIME as 'mild' outliers.
 
 ![KNIME workflow for generating day of week box plot\label{knime-accident-data-distribution}](knime-accident-date-distribution.pdf)
 
@@ -181,11 +181,11 @@ The `Time` attribute in the *Accidents* file represents the time of day that an 
 
 Figure \ref{accidents-by-hour} shows the number of accidents that occur during each hour of the day, from 0 to 23, across the whole data set. This shows that the fewest accidents occur between 04:00-04:59, while there are noticeable peaks between 08:00-08:59 and 17:00-17:59. These peaks could be predicted as they correspond to the usual 'rush hours' at the start and end of the working day. Nearly 25% of accidents occurred between 8am and 9am or between 4pm and 6pm.
 
-Similarly, Figure \ref{accidents-by-min} shows the number of accidents that occur during each minute of the day, from 0 to 59, across the whole data set. It is apparent that the most frequent times are on the hour and half-past the hour, with smaller peaks every five minutes. Although this could mean that acccidents happens more frequently at these points, a more likely explanation is that the police offers reporting the accident often round their approximation of the accident time to the nearest 5- or 30-minute boundary. This 'snapping' effect implies that attempting to analyse the `Date` and `Time` attributes with a resolution of less than 5 minutes is unlikely to be successful. A comparable level of accuracy in police reporting road accident times was inferred for road accident data collected about Helsinki's Ring Road [@innamaa, p. 18].
+Similarly, Figure \ref{accidents-by-min} shows the number of accidents that occur during each minute of the day, from 0 to 59, across the whole data set. It is apparent that the most frequent times are on the hour and half-past the hour, with smaller peaks every five minutes. Although this could mean that accidents happens more frequently at these points, a more likely explanation is that the police offers reporting the accident often round their approximation of the accident time to the nearest 5- or 30-minute boundary. This 'snapping' effect implies that attempting to analyse the `Date` and `Time` attributes with a resolution of less than 5 minutes is unlikely to be successful. A comparable level of accuracy in police reporting road accident times was inferred for road accident data collected about Helsinki's Ring Road [@innamaa, p. 18].
 
-![Histogram of number of accidents occuring during each hour of day\label{accidents-by-hour}](accidents-by-hour.pdf){ width=80% }
+![Histogram of number of accidents occurring during each hour of day\label{accidents-by-hour}](accidents-by-hour.pdf){ width=80% }
 
-![Histogram of number of accidents occuring during each minute of hour\label{accidents-by-min}](accidents-by-min.pdf){ width=80% }
+![Histogram of number of accidents occurring during each minute of hour\label{accidents-by-min}](accidents-by-min.pdf){ width=80% }
 
 ### `Longitude` and `Latitude`
 
@@ -216,7 +216,7 @@ In order to import the dataset into WEKA for exploration it must to be converted
 
 ## Missing values
 
-There are two different types of missing values in the datset. For example, the *Accidents* file contains 7 objects with missing longitude/latitude and 37 with a missing speed limit, represented as empty strings and the literal `NULL` in the input CSV, respectively (this can be determined through the *Statistics* node in KNIME). However, the lookup tables show that many of the nominal attributes (e.g. `Road_Type`) support an explicit code for missing or unknown values, usually `-1` defined as *Data missing or out of range*. Some attributes also specify an additional code defined as 'Unknown' or 'Not known'.
+There are two different types of missing values in the dataset. For example, the *Accidents* file contains 7 objects with missing longitude/latitude and 37 with a missing speed limit, represented as empty strings and the literal `NULL` in the input CSV, respectively (this can be determined through the *Statistics* node in KNIME). However, the lookup tables show that many of the nominal attributes (e.g. `Road_Type`) support an explicit code for missing or unknown values, usually `-1` defined as *Data missing or out of range*. Some attributes also specify an additional code defined as 'Unknown' or 'Not known'.
 
 For consistency and to enable WEKA to identify and handle missing values, all such nominal value codes were folded to 'true' missing values during pre-processing in KNIME by limiting the number of rows read by the *Excel Reader* node prior to being looked up by *Cell Replacer*. Note that this process did not include values such as `Unclassified` for `Road_Type`, since despite the name this is a valid type of road rather than missing data.
 
@@ -226,7 +226,7 @@ NB two accidents have a missing value for `Time`.
 
 KNIME 3.5.1 was chosen ... (talk about metanodes, documentation etc.)
 
-Python 2.7.13 with the `pandas`, `protobuf` and `jedi` extensions (installed as per the [KNIME documentation](https://www.knime.com/blog/how-to-setup-the-python-extension) and the `kmodes` extension (installed following the steps on the the [k-modes GitHub repo](https://github.com/nicodv/kmodes))
+Python 2.7.13 with the `pandas`, `protobuf` and `jedi` extensions (installed as per the [KNIME documentation](https://www.knime.com/blog/how-to-setup-the-python-extension) and the `kmodes` extension (installed following the steps on the [k-modes GitHub repo](https://github.com/nicodv/kmodes))
 
 Other extensions used:
 - matplotlib
@@ -264,9 +264,9 @@ In order to perform classification on the dataset it is necessary to select a su
 
 ## Choice of classifier and features
 
-Hill used cross-tabulation to identify clusters of vehicle maneouvres that are heavily represented in the accident data, including a group where another vehicle turns right while the TWMV performs any manoeuvre [-@hill, p. p10]. It is of interest to know which combination(s) of maneouvres are likely to result in a severe or fatal accident. Put another way, we would like to be able to predict the probability of an accident belonging to a given severity class, based on the maneouvres involved. We will assume that the type of each manoeuvre is independent of the other.
+Hill used cross-tabulation to identify clusters of vehicle manoeuvres that are heavily represented in the accident data, including a group where another vehicle turns right while the TWMV performs any manoeuvre [-@hill, p. p10]. It is of interest to know which combination(s) of manoeuvres are likely to result in a severe or fatal accident. Put another way, we would like to be able to predict the probability of an accident belonging to a given severity class, based on the manoeuvres involved. We will assume that the type of each manoeuvre is independent of the other.
 
-The naïve Bayes algorithm uses probability theory to find the most likely classification [@bramer, p. 22]. It is called naïve because the algorithm operates on the assumption that the effect of each attribute value on the classification is equally important and independent of the other attributes, but is known to often give surprisingly good results in practice [@bramer, p. 26]. By exploring this relatively straightforward probablistic model, we follow Witten et al.'s advice to try the simplest things first [-@witten, ch. 4].
+The naïve Bayes algorithm uses probability theory to find the most likely classification [@bramer, p. 22]. It is called naïve because the algorithm operates on the assumption that the effect of each attribute value on the classification is equally important and independent of the other attributes, but is known to often give surprisingly good results in practice [@bramer, p. 26]. By exploring this relatively straightforward probabilistic model, we follow Witten et al.'s advice to try the simplest things first [-@witten, ch. 4].
 
 Another reason for choosing this algorithm is that the dataset contains a large number of missing values, and naïve Bayes naturally handles missing values by not including such attributes in its calculations [@witten, ch. 4]. By contrast, algorithms such as decision trees require special handling for missing values (such as treating them as values in their own right, or splitting instances - [@witten, ch. 3]).
 
@@ -274,7 +274,7 @@ Another reason for choosing this algorithm is that the dataset contains a large 
 
 The naïve Bayes approach assumes that all attributes are nominal [@bramer, p. 29] therefore other attribute types must be converted to that type, or discarded.
 
-For a first attempt we take the approach of discarding all attributes except for the ones relating to vehicle maneouvres and the accident severity, i.e. `TWMV_Vehicle_Manoeuvre`, `OV_Vehicle_Maneouvre` and `Accident_Severity`. The `RemoveByName` WEKA filter can be used to remove all other attributes as follows:
+For a first attempt we take the approach of discarding all attributes except for the ones relating to vehicle manoeuvres and the accident severity, i.e. `TWMV_Vehicle_Manoeuvre`, `OV_Vehicle_Maneouvre` and `Accident_Severity`. The `RemoveByName` WEKA filter can be used to remove all other attributes as follows:
 
 ```
 weka.filters.unsupervised.attribute.RemoveByName -E ^.*Manoeuvre$ -V
@@ -306,7 +306,7 @@ useSupervisedDiscretization  False
 
 Table: Initial parameters for NaiveBayes classifier in WEKA\label{weka-bayesparams}
 
-The motivation for these parameters are as follows:
+The motivations for these parameters are as follows:
 
 - The default value for batch size is acceptable, and debug output is not required
 - Precision of greater than two decimal places when outputting the model is not needed 
@@ -362,7 +362,7 @@ Since 'Slight' is the most common class, 100% of these instances are correctly c
 
 The 'class imbalance problem' describes a situation where the class (or classes) of interest are rare [@han, p. 367]. This applies to the current dataset, since we are interested to know which circumstances produce the worst accidents, and fatal accidents represent just over 1% of the dataset. Moreover, the cost of more severe accidents (both financial and social) is likely to be greater than for slight accidents.
 
-To assess this it is helpful to consider the true positive rate (sensitivity) and false positive rate for each class as well as the model's overall accuracy. The true positive (TP) rate is the proportion of instances of each class where the class label was predicted correctly, while the FP rate is the proportion of instances that were mislabelled with the class. These figures are both included in Tables \ref{zerror-confusion} and \ref{naivebayes-confusion}.
+To assess this it is helpful to consider the true positive rate (sensitivity) and false positive rate for each class as well as the model's overall accuracy. The true positive (TP) rate is the proportion of instances of each class where the class label was predicted correctly, while the FP rate is the proportion of instances that were mislabelled with the class. These figures are both included in Tables \ref{zeror-confusion} and \ref{naivebayes-confusion}.
 
 ### Receiver operating characteristic curves
 
@@ -378,20 +378,20 @@ As mentioned above, severe and fatal accidents are likely to have a greater soci
 
 ### Cost-sensitive learning
 
-This technique uses a cost matrix to assign different costs to the different types of classifier error. In this case because we are considering a three-class problem, we need to provide a 3x3 misclassification cost matrix.
+As Witten et. al [-@witten] point out, "optimizing classification rate without considering the cost of the errors often leads to strange results". The technique of cost-sensitive learning uses a cost matrix to assign different costs to the different types of classifier error. In this case because we are considering a three-class problem, we need to provide a 3x3 misclassification cost matrix.
 
 The costs could be derived from the known costs of serious and fatal accidents in terms of emergency services, healthcare, etc. or based on a loose estimation of their relative impact. For the present study we use the second approach.
 
-To perform cost-sensitive learning in WEKA the `CostSensitiveClassifier` was used. This classifier is described as "a metaclassifier that makes its base classifier cost-sensitive." The same base classifier settings for NaiveBayes are used as previously described and the additional parameters shown in Table \ref{weka-costsensitive} are provided.
+To perform cost-sensitive learning in WEKA the `CostSensitiveClassifier` was used. This classifier is described in the documentation as "a metaclassifier that makes its base classifier cost-sensitive." The same base classifier settings for NaiveBayes are used as previously described and the additional parameters shown in Table \ref{weka-costsensitive} are provided.
 
 ----------------------------------------------
 Parameter             Value
 --------------------  ------------------------
 batchSize             100
 
-classifier            NaiveBayes ...
+classifier            NaiveBayes
 
-costMatrix            [see below]
+costMatrix            *see below*
 
 costMatrixSource      Use explicit cost matrix
 
@@ -406,19 +406,39 @@ seed                  1
 
 Table: Parameters for CostSensitiveClassifier in WEKA\label{weka-costsensitive}
 
-The cost matrix used for re-training is given in Table \ref{weka-costmatrix}.
+A cost matrix was created through experimentation to assign a greater cost to cases where fatal accidents are not predicted correctly by the classifier. This is because the costs of false positives and false negatives are not equal for all cases. This matrix was then used for re-training. The matrix used is given in Table \ref{weka-costmatrix}. Note that the cells where a 'fatal' accident is not categorised as fatal (false negatives for this class) show a greater cost.
 
----------
-1   0   0
+---------------------------------------
+Categorised as:  Slight  Serious  Fatal
+---------------  ------  -------  -----
+Slight                0         1     1
 
-0   1   0
+Serious               1         0     1
 
-0   0   1
----------
+Fatal                 5         2     0
+---------------------------------------
 
-Table: Misclassification cost matrix for Naive Bayes\label{weka-costmatrix}
+Table: Misclassification cost matrix for retraining naïve Bayes classifier\label{weka-costmatrix}
 
 ## Final results
+
+The confusion matrix in Table \ref{naivebayes-confusion-cost} show the results for the NaiveBayes classifier used in conjunction with CostSensitiveClassifier.
+
+---------------------------------------------------------------------------------------
+         Slight  Serious  Fatal  Total  True positive rate (%)  False positive rate (%)
+-------  ------  -------  -----  -----  ----------------------  -----------------------
+Slight     1050        6     24   1080                    97.2                     91.9
+
+Serious     341        1     25    367                     0.3                      0.5
+
+Fatal        20        0      6     26                    23.1                      3.4
+
+Total      1411        7     55   1473
+---------------------------------------------------------------------------------------
+
+Table: Confusion matrix for cost-sensitive NaiveBayes classifier\label{naivebayes-confusion-cost}
+
+In contrast with the original classifier test results in Table \ref{naivebayes-confusion} the classifier performed worse overall with an accuracy of 71.8%. However, it correctly predicted the class of 6 (23.1%) of the fatal accidents in the test set. At the same time, it misclassified 3.4% of non-fatal accidents as fatal, and identified only 5.7% of serious accidents correctly. This suggests that it is possible to improve the accuracy of a classifier by making it cost-sensitive, but only at the expense of accuracy with respect to other classes.
 
 # Clustering
 
@@ -426,11 +446,11 @@ As mentioned previously, clustering is a form of unsupervised data mining in whi
 
 ## Choice of clusterer and features
 
-Partioning methods of cluster analysis find mutually exclusive clusters that are spherical in shape, using a distance function to measure the similarity of objects within a cluster and therefore minimise the amount of within-cluster variation [@han, p. 489]. Of these methods, the iterative _k_-means algorithm uses the arithmetic mean to find the centroid of each cluster and therefore needs numerical attributes.
+Partitioning methods of cluster analysis find mutually exclusive clusters that are spherical in shape, using a distance function to measure the similarity of objects within a cluster and therefore minimise the amount of within-cluster variation [@han, p. 489]. Of these methods, the iterative _k_-means algorithm uses the arithmetic mean to find the centroid of each cluster and therefore needs numerical attributes.
 
-The _k_-modes method put forward by Huang [-@huang] is an extension to _k_-means which supports nominal (categorical) attributes, utilising the mode instead of the mean. Because of the large amount of nominal attributes in the dataset, _k_-modes could be be used. We expect any clusters found to be disjoint (i.e. not overlapping). Other options considered but rejected were the agglomerative hierarchical clustering used by [@taamneh].
+The _k_-modes method put forward by Huang [-@huang] is an extension to _k_-means which supports nominal (categorical) attributes, utilising the mode instead of the mean. Because of the large amount of nominal attributes in the dataset, _k_-modes could be used. We expect any clusters found to be disjoint (i.e. not overlapping). Other options considered but rejected were the agglomerative hierarchical clustering used by [@taamneh].
 
-KNIME and WEKA do not have explicitly implementations of _k_-modes. However, on investigation it was found that WEKA's *SimpleKMeans* clusterer supports nominal attributes (this can be seen by viewing the 'Capabilities' window for the classifier, which includes 'Nominal attributes'). It can be determined from looking at the source of the `SimpleKMeans` and `NormalizableDistance` classes [@wekasrc] that WEKA uses the mode instead of the mean when processing nominal attributes and calculates the distance between intances comprised of nominal attributes by counting the number of attributes that have different values. This suggests its implementation is similiar if not identical to _k_-modes and so is sufficient for our purposes.
+KNIME and WEKA do not have explicitly implementations of _k_-modes. However, on investigation it was found that WEKA's *SimpleKMeans* clusterer supports nominal attributes (this can be seen by viewing the 'Capabilities' window for the classifier, which includes 'Nominal attributes'). It can be determined from looking at the source of the `SimpleKMeans` and `NormalizableDistance` classes [@wekasrc] that WEKA uses the mode instead of the mean when processing nominal attributes and calculates the distance between instances comprised of nominal attributes by counting the number of attributes that have different values. This suggests its implementation is similar if not identical to _k_-modes and so is sufficient for our purposes.
 
 In order to simplify processing and produce results that could be more easily interpreted, a small number of nominal attributes were selected for clustering, all related to vehicle manoeuvre and position in relation to junctions. This was in order to attempt to replicate some of Hill's [-@hill] findings. These attributes were as follows:
 
@@ -446,7 +466,7 @@ The attributes used were selected from the input data set using the following WE
 weka.filters.unsupervised.attribute.Remove -V -R 27,29,46,48,65
 ```
 
-## Parameters
+## Parameters
 
 The *SimpleKMeans* clusterer was configured in WEKA with the parameters shown in Table \ref{weka-kmeansparams}.
 
@@ -573,7 +593,7 @@ validationMethod  Silhouette index
 
 Table: Parameters for KValid in WEKA\label{kvalid-params}
 
-These parameters cause KValid to try a range of values for _k_ and plot the silhoutte index for each. The graph generated is shown in Figure \ref{kvalid-graph}. It shows a gradual upward trend with a local maxmimum at k = 6. This suggests that 6 may be a good balance between silhoutte index and simplicity/interpretability.
+These parameters cause KValid to try a range of values for _k_ and plot the silhouette index for each. The graph generated is shown in Figure \ref{kvalid-graph}. It shows a gradual upward trend with a local maximum at k = 6. This suggests that 6 may be a good balance between silhouette index and simplicity/interpretability.
 
 ![KValid silhouette graph for different _k_ values\label{kvalid-graph}](kvalid-graph.png){ width=80% }
 
@@ -589,6 +609,8 @@ The selection of the dataset used in the study clearly created a number of addit
 
 The initial accuracy of the naïve Bayes classifier was disappointing in that it failed to predict any fatal accidents, however this could perhaps have been anticipated through more detailed exploration of the data in the analysis phase. This might have revealed the 'class imbalance' problem and informed the choice of classification technique.
 
+Although cost-sensitive learning improved the accuracy of the classifier, the selection of values for the cost matrix were highly arbitrary. In a real-world application they should have a clear basis in evidence. Moreover, other techniques for improving classifier accuracy, such as oversampling or undersampling data to produce a balanced class distribution, or using ensemble methods [@han, p. 384] could have been attempted.
+
 Missing values could occur because of a number of reasons, such as error on behalf of the police officer or during data entry. However, as Witten et. al [-@witten] point out, some missing values can be due to a conscious decision rather than error. It would have been helpful during data analysis/preprocessing to identify those missing values which may mean 'not applicable'. For example, 28% of instances have a missing value for `2nd_Road_Class` - this could be because there was no second road. Reviewing official guidance on completing the form [@stats20] might have been beneficial here.
 
 One difficulty of using _k_-means is that it is not guaranteed to find the overall best set of clusters but may terminate at a local optimum. As Bramer points out [-@bramer, p. 319], results are dependent on the choice of initial cluster centroids, which when a random initialisation method is used (as with WEKA's *SimpleKMeans* here) means that altering the 'seed' parameter may produce different clusters. It would have been helpful to explore the effect of using different seeds and initialisation methods for this algorithm.
@@ -601,17 +623,17 @@ In terms of the tools used, KNIME is clearly a useful platform for data preproce
 
 Some suggestions for future work are given below.
 
-### Classification of fatal maneouvres
+### Classification of fatal manoeuvres
 
-Following the work done in the Classification task, a new Bayesian classifier could be built that can predict the severity of an accident based on the maneouvres involved, with a variable threshold. This was not  attempted in this study, but some of the calculations required are outlined below (after Han [-@han]):
+Following the work done in the Classification task, a new Bayesian classifier could be built that can predict the severity of an accident based on the manoeuvres involved, with a variable threshold. This was not  attempted in this study, but some of the calculations required are outlined below (after Han [-@han]):
 
-Let _A_ be an accident involving two manoeuvres (the 'evidence', in Bayesian terms). _H_ is the hypothesis that _A_ is fatal, that is it belongs to the 'fatal' class. We want to determine _P_(_H_|_A_), the probability of this hypothesis conditioned on the observed maneouvres (the posterior probability). 
+Let _A_ be an accident involving two manoeuvres (the 'evidence', in Bayesian terms). _H_ is the hypothesis that _A_ is fatal, that is it belongs to the 'fatal' class. We want to determine _P_(_H_|_A_), the probability of this hypothesis conditioned on the observed manoeuvres (the posterior probability). 
 
-_P_(_H_) is the prior probability of _H_, here meaning the probability that any accident will be fatal regardless of maneouvres. This can be estimated by counting the number of fatal accidents in the dataset and dividing it by the total number of accidents: 200/14735 = 0.014.
+_P_(_H_) is the prior probability of _H_, here meaning the probability that any accident will be fatal regardless of manoeuvres. This can be estimated by counting the number of fatal accidents in the dataset and dividing it by the total number of accidents: 200/14735 = 0.014.
 
-_P_(_A_|_H_) is the posterior probability of _A_ conditioned on _H_, i.e. the probability that an accident involves two specific maneouvres, given we know the accident is fatal. By assuming there is no dependency between the maneouvres _m~1~_ and _m~2~_, we can calculate this as _P_(_m~1~_|_H_) × _P_(_m~2~_|_H_) by counting the number instances in the training set where each maneouvre occurs for a fatal accident. For example, there are 27 accidents where the TWMV was overtaking a moving vehicle out of 200 fatal accidents, so _P_(_m~1~_|_H_) here is 27/200 = 0.135.
+_P_(_A_|_H_) is the posterior probability of _A_ conditioned on _H_, i.e. the probability that an accident involves two specific manoeuvres, given we know the accident is fatal. By assuming there is no dependency between the manoeuvres _m~1~_ and _m~2~_, we can calculate this as _P_(_m~1~_|_H_) × _P_(_m~2~_|_H_) by counting the number instances in the training set where each manoeuvre occurs for a fatal accident. For example, there are 27 accidents where the TWMV was overtaking a moving vehicle out of 200 fatal accidents, so _P_(_m~1~_|_H_) here is 27/200 = 0.135.
 
-_P_(_A_) is the prior probability of _A_, meaning the probability that any accident in the dataset involves the two given maneouvres, i.e. _P_(_m~1~_) × _P_(_m~2~_).
+_P_(_A_) is the prior probability of _A_, meaning the probability that any accident in the dataset involves the two given manoeuvres, i.e. _P_(_m~1~_) × _P_(_m~2~_).
 
 We could then use Bayes' theorem to estimate the probability that any new accident with those manoeuvres is fatal:
 
@@ -640,7 +662,7 @@ output_table = pd.DataFrame(data=clusters, dtype=np.int64)
 
 ![Proof-of-concept KNIME workflow for k-modes\label{knime-kmodes}](knime-kmodes.pdf)
 
-The result of this workflow is an additional numeric attribute dataset that identifies the cluter with which each object has been associated. The results of this could be compared with the output of WEKA's `SimpleKMeans` clusterer described earlier.
+The result of this workflow is an additional numeric attribute dataset that identifies the cluster with which each object has been associated. The results of this could be compared with the output of WEKA's `SimpleKMeans` clusterer described earlier.
 
 ### Analysis of geographical locations
 
