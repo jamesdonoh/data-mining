@@ -243,4 +243,44 @@ references:
   issued: 1987
   volume: 20
   page: 53-65
+- id: taamneh
+  container-title: International Journal of Injury Control and Safety Promotion
+  title: "Clustering-based classification of road traffic accidents using hierarchical clustering and artificial neural networks"
+  author:
+  - family: Taamneh
+    given: Madhar
+  - family: Taamneh
+    given: Salah
+  - family: Alkheder
+    given: Sharaf
+  type: article-journal
+  issued: 2017
+  volume: 24
+  issue: 3
+  page: 388-395
+- id: francis
+  title: KValid
+  author:
+  - family: Francis
+    given: Davidson
+  type: webpage
+  URL: https://github.com/Theldus/KValid
+  issued: 2017
+  accessed:
+    date-parts:
+    - - 2018
+      - 06
+      - 16
+- id: wekasrc
+  title: WEKA 3.8.2 source code
+  author:
+  - literal: University of Waikato
+  type: webpage
+  URL: https://svn.cms.waikato.ac.nz/svn/weka/tags/stable-3-8-2/weka/src/main/java/weka
+  issued: 2018
+  accessed:
+    date-parts:
+    - - 2018
+      - 06
+      - 15
 ...
